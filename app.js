@@ -1,4 +1,4 @@
-const DAYS = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag"];
+const DAYS = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
 const year = new Date().getFullYear();
 const STORAGE_KEY = "digitaleMagnetwandDemo_v2";
 
