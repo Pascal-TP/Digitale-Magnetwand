@@ -8,6 +8,20 @@ let dragNoteId = null;
 let dragMagnetText = null;
 let dragMagnetClass = "";
 
+const PEOPLE_STORAGE_KEY = "digitaleMagnetwand_people_v1";
+
+let workers = [
+  "Kevin", "Marcel", "Andrej", "Sven", "Tom",
+  "Monteur 06", "Monteur 07", "Monteur 08", "Monteur 09", "Monteur 10"
+];
+
+let vehicles = [
+  "Sprinter 1", "Crafter 2", "Anhänger",
+  "Fahrzeug 04", "Fahrzeug 05", "Fahrzeug 06"
+];
+
+loadPeople();
+
 const weekNumber = document.getElementById("weekNumber");
 const template = document.getElementById("noteTemplate");
 const columns = [...document.querySelectorAll(".day-column")];
@@ -35,16 +49,22 @@ document.getElementById("clearWeek").addEventListener("click", () => {
   }
 });
 
-document.querySelectorAll(".toolbox .magnet").forEach(magnet => {
-  magnet.addEventListener("dragstart", e => {
-    dragMagnetText = magnet.textContent.trim();
-    dragMagnetClass = magnet.classList.contains("vehicle") ? "vehicle" : "";
-    e.dataTransfer.setData("text/plain", dragMagnetText);
-  });
-  magnet.addEventListener("dragend", () => {
-    dragMagnetText = null;
-    dragMagnetClass = "";
-  });
+renderSlotLists();
+
+document.getElementById("addWorker").addEventListener("click", () => {
+  addToSlotList("worker");
+});
+
+document.getElementById("addVehicle").addEventListener("click", () => {
+  addToSlotList("vehicle");
+});
+
+document.getElementById("newWorkerName").addEventListener("keydown", e => {
+  if (e.key === "Enter") addToSlotList("worker");
+});
+
+document.getElementById("newVehicleName").addEventListener("keydown", e => {
+  if (e.key === "Enter") addToSlotList("vehicle");
 });
 
 columns.forEach(column => {
@@ -376,16 +396,16 @@ function renderAssigned(container, items) {
     el.className = "magnet " + (item.cls || "");
     el.textContent = item.text;
     el.title = "Doppelklick zum Entfernen";
-   el.addEventListener("dblclick", () => {
-  const note = el.closest(".note");
-  el.remove();
+    el.addEventListener("dblclick", () => {
+      const note = el.closest(".note");
+      el.remove();
 
-  if (note) {
-    updateCompactView(note);
-  }
+      if (note) {
+        updateCompactView(note);
+      }
 
-  saveCurrentBoard();
-});
+      saveCurrentBoard();
+    });
     container.appendChild(el);
   });
 }
@@ -592,4 +612,71 @@ function getMondayOfISOWeek(week, year) {
 
   return monday;
 
+}
+
+function renderSlotLists() {
+  renderOneSlotList("workerList", workers, "");
+  renderOneSlotList("vehicleList", vehicles, "vehicle");
+}
+
+function renderOneSlotList(containerId, items, cls) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+
+  items.forEach(name => {
+    const el = document.createElement("div");
+    el.className = "magnet " + cls;
+    el.draggable = true;
+    el.textContent = name;
+
+    el.addEventListener("dragstart", e => {
+      dragMagnetText = name;
+      dragMagnetClass = cls;
+      e.dataTransfer.setData("text/plain", name);
+    });
+
+    el.addEventListener("dragend", () => {
+      dragMagnetText = null;
+      dragMagnetClass = "";
+    });
+
+    container.appendChild(el);
+  });
+}
+
+function addToSlotList(type) {
+  const input = type === "worker"
+    ? document.getElementById("newWorkerName")
+    : document.getElementById("newVehicleName");
+
+  const value = input.value.trim();
+  if (!value) return;
+
+  const list = type === "worker" ? workers : vehicles;
+
+  if (!list.includes(value)) {
+    list.push(value);
+    list.sort((a, b) => a.localeCompare(b, "de"));
+    savePeople();
+    renderSlotLists();
+  }
+
+  input.value = "";
+}
+
+function savePeople() {
+  localStorage.setItem(PEOPLE_STORAGE_KEY, JSON.stringify({
+    workers,
+    vehicles
+  }));
+}
+
+function loadPeople() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(PEOPLE_STORAGE_KEY));
+    if (saved && Array.isArray(saved.workers)) workers = saved.workers;
+    if (saved && Array.isArray(saved.vehicles)) vehicles = saved.vehicles;
+  } catch {
+    // leer lassen
+  }
 }
