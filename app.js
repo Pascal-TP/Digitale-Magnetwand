@@ -7,6 +7,13 @@ import {
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyBCE0F_9qFQPl-qEck3RxnHrOZ7mi4p48c",
   authDomain: "digitale-projektplanung.firebaseapp.com",
@@ -19,9 +26,15 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
+const auth = getAuth(firebaseApp);
+let currentUserRole = "view";
 
 const planningRef = doc(db, "planning", "main");
 const peopleRef = doc(db, "people", "main");
+
+function userRef(uid) {
+  return doc(db, "users", uid);
+}
 
 const DAYS = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
 const year = new Date().getFullYear();
@@ -122,6 +135,10 @@ columns.forEach(column => {
   });
 });
 
+function canEdit() {
+  return currentUserRole === "full";
+}
+
 function loadData() {
   return { weeks: {} };
 }
@@ -139,6 +156,7 @@ async function loadDataFromFirestore() {
 
 async function saveData() {
   if (isRemoteUpdate) return;
+  if (!canEdit()) return;
   await setDoc(planningRef, data);
 }
 
@@ -570,7 +588,38 @@ function makeTextImage(text, width, height) {
 
 window.addEventListener("beforeunload", saveCurrentBoard);
 
-startApp();
+document.getElementById("loginButton").addEventListener("click", async () => {
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch {
+    document.getElementById("loginError").textContent = "Anmeldung fehlgeschlagen.";
+  }
+});
+
+document.getElementById("logoutButton").addEventListener("click", () => {
+  signOut(auth);
+});
+
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    document.getElementById("loginScreen").classList.remove("hidden");
+    return;
+  }
+
+  const snap = await getDoc(userRef(user.uid));
+
+  currentUserRole = snap.exists() && snap.data().role === "full"
+    ? "full"
+    : "view";
+
+  document.body.classList.toggle("view-only", currentUserRole === "view");
+  document.getElementById("loginScreen").classList.add("hidden");
+
+  startApp();
+});
 
 async function startApp() {
   await loadDataFromFirestore();
@@ -671,6 +720,7 @@ function addToSlotList(type) {
 }
 
 async function savePeople() {
+  if (!canEdit()) return;
   await setDoc(peopleRef, {
     workers,
     vehicles

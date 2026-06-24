@@ -630,3 +630,62 @@ input[type="checkbox"] {
   background: rgba(77, 143, 214, .9);
   border-style: solid;
 }
+
+.login-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #eef1f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-screen.hidden {
+  display: none;
+}
+
+.login-box {
+  width: 360px;
+  background: white;
+  padding: 28px;
+  border-radius: 18px;
+  box-shadow: 0 12px 32px rgba(0,0,0,.22);
+}
+
+.login-box input,
+.login-box button {
+  width: 100%;
+  margin-top: 12px;
+}
+
+#loginError {
+  color: #c0392b;
+  font-weight: 700;
+}
+
+body.view-only #addNote,
+body.view-only #clearWeek,
+body.view-only .toolbox,
+body.view-only .delete,
+body.view-only .duplicate,
+body.view-only .mode-toggle,
+body.view-only .eraser-toggle,
+body.view-only .clear-writing,
+body.view-only .assigned,
+body.view-only .week-drop {
+  display: none !important;
+}
+
+body.view-only canvas,
+body.view-only input,
+body.view-only .note {
+  pointer-events: none;
+}
+
+body.view-only .toggle-note,
+body.view-only #prevWeek,
+body.view-only #nextWeek,
+body.view-only #logoutButton {
+  pointer-events: auto;
+}
