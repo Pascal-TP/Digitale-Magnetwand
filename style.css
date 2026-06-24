@@ -445,3 +445,15 @@ input[type="checkbox"] {
 .note.minimized .mode-toggle {
   display: none;
 }
+
+.note.eraser-mode canvas[data-field] {
+  cursor: cell;
+}
+
+.note.eraser-mode .hybrid-field canvas {
+  opacity: 1;
+}
+
+.note.minimized .eraser-toggle {
+  display: none;
+}

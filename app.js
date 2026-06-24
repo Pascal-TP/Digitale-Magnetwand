@@ -246,6 +246,18 @@ function createNoteElement(day, noteData) {
       : "✎ Stift";
   });
 
+  clone.querySelector(".eraser-toggle").addEventListener("click", e => {
+    e.stopPropagation();
+
+    clone.classList.toggle("eraser-mode");
+    clone.classList.remove("keyboard-mode");
+
+    const btn = clone.querySelector(".eraser-toggle");
+    btn.textContent = clone.classList.contains("eraser-mode")
+      ? "✎ Schreiben"
+      : "🧽 Radierer";
+  });
+
   const assigned = clone.querySelector(".assigned");
   assigned.addEventListener("dragover", e => e.preventDefault());
   assigned.addEventListener("drop", e => {
@@ -294,7 +306,7 @@ function setupWritingCanvas(canvas, imageData) {
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
   ctx.strokeStyle = "#164a8a";
-
+  ctx.globalCompositeOperation = "source-over";
   if (imageData) {
     const img = new Image();
     img.onload = () => ctx.drawImage(img, 0, 0);
@@ -323,6 +335,10 @@ function setupWritingCanvas(canvas, imageData) {
     if (!drawing) return;
     const p = point(e);
     ctx.beginPath();
+    const isEraser = canvas.closest(".note").classList.contains("eraser-mode");
+
+    ctx.globalCompositeOperation = isEraser ? "destination-out" : "source-over";
+    ctx.lineWidth = isEraser ? 18 : 3;
     ctx.moveTo(last.x, last.y);
     ctx.lineTo(p.x, p.y);
     ctx.stroke();
