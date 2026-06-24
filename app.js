@@ -272,6 +272,7 @@ function createNoteElement(day, noteData) {
     if (!current.some(x => x.text === item.text)) {
       current.push(item);
       renderAssigned(assigned, current);
+      updateCompactView(clone);
       saveCurrentBoard();
     }
   });
@@ -375,10 +376,16 @@ function renderAssigned(container, items) {
     el.className = "magnet " + (item.cls || "");
     el.textContent = item.text;
     el.title = "Doppelklick zum Entfernen";
-    el.addEventListener("dblclick", () => {
-      el.remove();
-      saveCurrentBoard();
-    });
+   el.addEventListener("dblclick", () => {
+  const note = el.closest(".note");
+  el.remove();
+
+  if (note) {
+    updateCompactView(note);
+  }
+
+  saveCurrentBoard();
+});
     container.appendChild(el);
   });
 }
