@@ -523,3 +523,16 @@ input[type="checkbox"] {
   background: #4d8fd6;
   color: white;
 }
+
+.topbar {
+  position: relative;
+}
+
+.top-logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  max-height: 58px;
+  max-width: 260px;
+  object-fit: contain;
+}

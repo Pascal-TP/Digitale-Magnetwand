@@ -39,7 +39,6 @@ document.getElementById("nextWeek").addEventListener("click", () => {
 });
 
 document.getElementById("addNote").addEventListener("click", () => addNote("Montag"));
-document.getElementById("addSample").addEventListener("click", addSampleNote);
 
 document.getElementById("clearWeek").addEventListener("click", () => {
   if (confirm("Diese Kalenderwoche wirklich leeren?")) {
@@ -144,63 +143,6 @@ function addNote(day, noteData = null) {
   saveData();
 }
 
-function addSampleNote() {
-  addNote("Montag", {
-    id: crypto.randomUUID(),
-    writings: {
-      auftraggeber: makeTextImage("Muster GmbH", 250, 34),
-      bv: makeTextImage("Neubau Wohnanlage", 300, 34),
-      p: makeTextImage("23-001", 120, 34),
-      ort: makeTextImage("Musterstadt", 190, 34),
-      bautraeger: makeTextImage("Musterbau AG", 220, 34),
-      etage: makeTextImage("EG - 3.OG", 170, 34),
-      flaeche: makeTextImage("1.250", 100, 34),
-      hk: makeTextImage("1-6", 100, 34),
-      rohr: makeTextImage("16x2", 110, 34),
-      termin: makeTextImage("KW 3 - KW 6", 230, 34),
-      estrich: makeTextImage("ja", 120, 34),
-      tw: makeTextImage("nein", 120, 34),
-      sonstiges: makeTextImage("Zugang über Hofseite", 650, 38),
-      summe: makeTextImage("3", 70, 34)
-    },
-    texts: {
-      auftraggeber: "Muster GmbH",
-      bv: "Neubau Wohnanlage",
-      p: "23-001",
-      ort: "Musterstadt",
-      bautraeger: "Musterbau AG",
-      etage: "EG - 3.OG",
-      flaeche: "1.250",
-      hk: "1-6",
-      rohr: "16x2",
-      termin: "KW 3 - KW 6",
-      estrich: "ja",
-      tw: "nein",
-      sonstiges: "Zugang über Hofseite",
-      summe: "3"
-    },
-    checks: {
-      mz: true,
-      materialliste: true,
-      angefahren: true,
-      systemrohr: true
-    },
-    minimized: true,
-    checklists: {
-      bauleitung: [true, true, false, false, false, false, false, false, false, false, false, false, false, false, false],
-      prozess: Array(15).fill(false)
-    },
-    assigned: [
-      { text: "Kevin", cls: "" },
-      { text: "Marcel", cls: "" },
-      { text: "Sven", cls: "" },
-      { text: "Sprinter 1", cls: "vehicle" }
-    ]
-
-  });
-
-}
-
 function createNoteElement(day, noteData) {
   const clone = template.content.firstElementChild.cloneNode(true);
   clone.dataset.noteId = noteData.id;
@@ -212,15 +154,28 @@ function createNoteElement(day, noteData) {
   clone.querySelector(".toggle-note").addEventListener("click", e => {
     e.stopPropagation();
 
-    const willMinimize = !clone.classList.contains("minimized");
+    const isCurrentlyMinimized = clone.classList.contains("minimized");
 
-    if (willMinimize) {
+    if (isCurrentlyMinimized) {
+      document.querySelectorAll(".note:not(.minimized)").forEach(openNote => {
+        if (openNote !== clone) {
+          openNote.classList.add("minimized");
+
+          openNote.querySelectorAll(".checklist-panel").forEach(panel => {
+            panel.classList.add("hidden");
+          });
+        }
+      });
+
+      clone.classList.remove("minimized");
+    } else {
       clone.querySelectorAll(".checklist-panel").forEach(panel => {
         panel.classList.add("hidden");
       });
+
+      clone.classList.add("minimized");
     }
 
-    clone.classList.toggle("minimized");
     saveCurrentBoard();
   });
 
@@ -572,10 +527,6 @@ function makeTextImage(text, width, height) {
 window.addEventListener("beforeunload", saveCurrentBoard);
 
 renderWeek();
-
-if (Object.values(getWeek()).every(arr => arr.length === 0)) {
-  addSampleNote();
-}
 
 function updateWeekDates() {
 
