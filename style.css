@@ -441,3 +441,7 @@ input[type="checkbox"] {
 .mode-toggle {
   min-width: 86px;
 }
+
+.note.minimized .mode-toggle {
+  display: none;
+}
