@@ -107,6 +107,7 @@ function addNote(day, noteData = null) {
   const empty = {
     id: crypto.randomUUID(),
     writings: {},
+    texts: {},
     checks: {},
     assigned: [],
     minimized: true,
@@ -139,6 +140,22 @@ function addSampleNote() {
       tw: makeTextImage("nein", 120, 34),
       sonstiges: makeTextImage("Zugang über Hofseite", 650, 38),
       summe: makeTextImage("3", 70, 34)
+    },
+    texts: {
+      auftraggeber: "Muster GmbH",
+      bv: "Neubau Wohnanlage",
+      p: "23-001",
+      ort: "Musterstadt",
+      bautraeger: "Musterbau AG",
+      etage: "EG - 3.OG",
+      flaeche: "1.250",
+      hk: "1-6",
+      rohr: "16x2",
+      termin: "KW 3 - KW 6",
+      estrich: "ja",
+      tw: "nein",
+      sonstiges: "Zugang über Hofseite",
+      summe: "3"
     },
     checks: {
       mz: true,
@@ -207,6 +224,26 @@ function createNoteElement(day, noteData) {
   clone.querySelectorAll("canvas[data-field]").forEach(canvas => {
     const key = canvas.dataset.field;
     setupWritingCanvas(canvas, noteData.writings ? noteData.writings[key] : "");
+  });
+
+  clone.querySelectorAll("[data-text-field]").forEach(input => {
+    const key = input.dataset.textField;
+    input.value = noteData.texts ? noteData.texts[key] || "" : "";
+
+    input.addEventListener("input", () => {
+      updateCompactView(clone);
+      saveCurrentBoard();
+    });
+  });
+
+  clone.querySelector(".mode-toggle").addEventListener("click", e => {
+    e.stopPropagation();
+    clone.classList.toggle("keyboard-mode");
+
+    const btn = clone.querySelector(".mode-toggle");
+    btn.textContent = clone.classList.contains("keyboard-mode")
+      ? "⌨ Tastatur"
+      : "✎ Stift";
   });
 
   const assigned = clone.querySelector(".assigned");
@@ -407,7 +444,10 @@ function updateCompactView(noteEl) {
   const compactBv = noteEl.querySelector(".compact-bv");
 
   if (compactBv) {
-    compactBv.textContent = "Bauvorhaben";
+    const bvInput = noteEl.querySelector('[data-text-field="bv"]');
+    compactBv.textContent = bvInput && bvInput.value.trim()
+      ? bvInput.value.trim()
+      : "Bauvorhaben";
   }
 
   const source = noteEl.querySelector(".assigned");
@@ -422,6 +462,11 @@ function collectNote(noteEl) {
   const writings = {};
   noteEl.querySelectorAll("canvas[data-field]").forEach(canvas => {
     writings[canvas.dataset.field] = canvas.toDataURL("image/png");
+  });
+
+  const texts = {};
+  noteEl.querySelectorAll("[data-text-field]").forEach(input => {
+    texts[input.dataset.textField] = input.value;
   });
 
   const checks = {};
@@ -445,6 +490,7 @@ function collectNote(noteEl) {
   return {
     id: noteEl.dataset.noteId,
     writings,
+    texts,
     checks,
     assigned: readAssigned(noteEl.querySelector(".assigned")),
     minimized: noteEl.classList.contains("minimized"),
