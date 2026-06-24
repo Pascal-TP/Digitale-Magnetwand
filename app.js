@@ -662,3 +662,58 @@ trashBin.addEventListener("drop", e => {
   dragMagnetText = null;
   dragMagnetClass = "";
 });
+
+setupWeekDrop("prevWeekDrop", -1);
+setupWeekDrop("nextWeekDrop", 1);
+
+function setupWeekDrop(elementId, direction) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+
+  el.addEventListener("dragover", e => {
+    e.preventDefault();
+    el.classList.add("drag-over");
+  });
+
+  el.addEventListener("dragleave", () => {
+    el.classList.remove("drag-over");
+  });
+
+  el.addEventListener("drop", e => {
+    e.preventDefault();
+    el.classList.remove("drag-over");
+
+    if (!dragNoteId) return;
+
+    saveCurrentBoard();
+
+    const current = getWeek();
+    let movedNote = null;
+
+    for (const day of DAYS) {
+      const index = current[day].findIndex(note => note.id === dragNoteId);
+      if (index !== -1) {
+        movedNote = current[day].splice(index, 1)[0];
+        break;
+      }
+    }
+
+    if (!movedNote) return;
+
+    let targetWeekNumber = currentWeek + direction;
+
+    if (targetWeekNumber < 1) targetWeekNumber = 52;
+    if (targetWeekNumber > 52) targetWeekNumber = 1;
+
+    if (!data.weeks[targetWeekNumber]) {
+      data.weeks[targetWeekNumber] = emptyWeek();
+    }
+
+    data.weeks[targetWeekNumber]["Montag"].push(movedNote);
+
+    saveData();
+    dragNoteId = null;
+
+    renderWeek();
+  });
+}

@@ -574,3 +574,19 @@ input[type="checkbox"] {
 .note:not(.minimized) {
   z-index: 50;
 }
+
+.week-drop {
+  min-width: 150px;
+  padding: 10px 12px;
+  border: 2px dashed rgba(255,255,255,.65);
+  border-radius: 14px;
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.week-drop.drag-over {
+  background: rgba(77, 143, 214, .9);
+  border-style: solid;
+}
