@@ -32,6 +32,9 @@ let data = loadData();
 let dragNoteId = null;
 let dragMagnetText = null;
 let dragMagnetClass = "";
+let isRemoteUpdate = false;
+let unsubscribePlanning = null;
+let unsubscribePeople = null;
 
 const PEOPLE_STORAGE_KEY = "digitaleMagnetwand_people_v1";
 
@@ -135,6 +138,7 @@ async function loadDataFromFirestore() {
 }
 
 async function saveData() {
+  if (isRemoteUpdate) return;
   await setDoc(planningRef, data);
 }
 
@@ -149,7 +153,7 @@ function getWeek() {
   return data.weeks[currentWeek];
 }
 
-function renderWeek() {
+function renderWeek(shouldSave = true) {
   weekNumber.textContent = currentWeek;
   columns.forEach(column => column.querySelector(".dropzone").innerHTML = "");
 
@@ -159,7 +163,9 @@ function renderWeek() {
   });
 
   updateWeekDates();
-  saveData();
+  if (shouldSave && !isRemoteUpdate) {
+    saveData();
+  }
 }
 
 function addNote(day, noteData = null) {
@@ -571,7 +577,9 @@ async function startApp() {
   await loadPeople();
 
   renderSlotLists();
-  renderWeek();
+  renderWeek(false);
+
+  subscribeToRealtimeUpdates();
 }
 
 function updateWeekDates() {
@@ -764,5 +772,27 @@ function setupWeekDrop(elementId, direction) {
     dragNoteId = null;
 
     renderWeek();
+  });
+}
+
+function subscribeToRealtimeUpdates() {
+  unsubscribePlanning = onSnapshot(planningRef, snap => {
+    if (!snap.exists()) return;
+
+    isRemoteUpdate = true;
+    data = snap.data();
+    renderWeek(false);
+    isRemoteUpdate = false;
+  });
+
+  unsubscribePeople = onSnapshot(peopleRef, snap => {
+    if (!snap.exists()) return;
+
+    const saved = snap.data();
+
+    if (Array.isArray(saved.workers)) workers = saved.workers;
+    if (Array.isArray(saved.vehicles)) vehicles = saved.vehicles;
+
+    renderSlotLists();
   });
 }
