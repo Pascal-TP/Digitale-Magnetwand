@@ -49,7 +49,7 @@ const DAYS = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samsta
 const year = new Date().getFullYear();
 const STORAGE_KEY = "digitaleMagnetwandDemo_v2";
 
-let currentWeek = 1;
+let currentWeek = getCurrentISOWeek();
 let data = loadData();
 let dragNoteId = null;
 let dragMagnetText = null;
@@ -1115,4 +1115,16 @@ function subscribeToHistory() {
       list.appendChild(div);
     });
   });
+}
+
+function getCurrentISOWeek() {
+  const now = new Date();
+  const date = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+
+  const dayNumber = date.getUTCDay() || 7;
+  date.setUTCDate(date.getUTCDate() + 4 - dayNumber);
+
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+
+  return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
 }
