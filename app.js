@@ -151,7 +151,7 @@ columns.forEach(column => {
 
     logHistory(
       "Zettel verschoben",
-      `${getNoteLabel(noteEl)} → ${column.dataset.day}, KW ${currentWeek}`
+      `${getNoteLabel(note)} → ${column.dataset.day}, KW ${currentWeek}`
     );
   });
 });
@@ -1113,7 +1113,7 @@ function setupWeekDrop(elementId, direction) {
 
     logHistory(
       "Zettel in andere KW verschoben",
-      `${getNoteLabel(noteEl)} → KW ${targetWeekNumber}`
+      `Zettel #${formatNoteNumber(movedNote)} → KW ${targetWeekNumber}`
     );
 
     renderWeek();
