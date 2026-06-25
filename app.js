@@ -389,12 +389,12 @@ function createNoteElement(day, noteData) {
 
   const modeButton = clone.querySelector(".mode-toggle");
 
-  if (noteData.keyboardMode !== false) {
-    clone.classList.add("keyboard-mode");
-    modeButton.textContent = "⌨ Tastatur";
-  } else {
-    modeButton.textContent = "✎ Stift";
-  }
+ if (noteData.keyboardMode !== false) {
+  clone.classList.add("keyboard-mode");
+  modeButton.textContent = "✏️ Stift";
+} else {
+  modeButton.textContent = "⌨ Tastatur";
+}
 
   if (noteData.eraserMode) {
     clone.classList.add("eraser-mode");
@@ -497,8 +497,8 @@ function createNoteElement(day, noteData) {
     clone.classList.remove("eraser-mode");
 
     modeButton.textContent = clone.classList.contains("keyboard-mode")
-      ? "⌨ Tastatur"
-      : "✎ Stift";
+    ? "✏️ Stift"
+    : "⌨ Tastatur";
 
     const eraserButton = clone.querySelector(".eraser-toggle");
     eraserButton.textContent = "🧽 Radierer";
