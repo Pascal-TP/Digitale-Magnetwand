@@ -885,3 +885,10 @@ body.view-only #logoutButton {
 .help-box:hover .help-tooltip {
   opacity: 1;
 }
+
+.help-tooltip {
+  position: fixed;
+  left: 400px;
+  top: 150px;
+  z-index: 99999;
+}
