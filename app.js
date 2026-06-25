@@ -57,6 +57,7 @@ let dragMagnetClass = "";
 let isRemoteUpdate = false;
 let unsubscribePlanning = null;
 let unsubscribePeople = null;
+let lastOpenUiState = null;
 
 const PEOPLE_STORAGE_KEY = "digitaleMagnetwand_people_v1";
 
@@ -226,6 +227,38 @@ function getNoteLabel(noteEl) {
   const bv = bvInput && bvInput.value.trim() ? bvInput.value.trim() : "";
 
   return bv ? `Zettel #${number} – ${bv}` : `Zettel #${number}`;
+}
+
+function captureOpenUiState() {
+  const openNote = document.querySelector(".note:not(.minimized)");
+  if (!openNote) return null;
+
+  const openPanel = openNote.querySelector(".checklist-panel:not(.hidden)");
+
+  return {
+    noteId: openNote.dataset.noteId,
+    panelType: openPanel ? openPanel.dataset.listPanel : null
+  };
+}
+
+function restoreOpenUiState(state) {
+  if (!state || !state.noteId) return;
+
+  const note = document.querySelector(`[data-note-id="${state.noteId}"]`);
+  if (!note) return;
+
+  note.classList.remove("minimized");
+
+  note.querySelectorAll(".checklist-panel").forEach(panel => {
+    panel.classList.add("hidden");
+  });
+
+  if (state.panelType) {
+    const panel = note.querySelector(`[data-list-panel="${state.panelType}"]`);
+    if (panel) {
+      panel.classList.remove("hidden");
+    }
+  }
 }
 
 function loadData() {
@@ -570,13 +603,19 @@ function clearCanvas(canvas) {
 
 function renderAssigned(container, items) {
   container.innerHTML = "";
+
   items.forEach(item => {
     const el = document.createElement("span");
     el.className = "magnet " + (item.cls || "");
     el.textContent = item.text;
     el.title = "Doppelklick zum Entfernen";
+
     el.addEventListener("dblclick", () => {
       const note = el.closest(".note");
+      const label = note ? getNoteLabel(note) : "Zettel";
+      const removedText = el.textContent.trim();
+      const type = el.classList.contains("vehicle") ? "Fahrzeug" : "Monteur";
+
       el.remove();
 
       if (note) {
@@ -584,7 +623,13 @@ function renderAssigned(container, items) {
       }
 
       saveCurrentBoard();
+
+      logHistory(
+        "Zuordnung entfernt",
+        `${label} · ${type} "${removedText}" entfernt`
+      );
     });
+
     container.appendChild(el);
   });
 }
@@ -1004,9 +1049,12 @@ function subscribeToRealtimeUpdates() {
   unsubscribePlanning = onSnapshot(planningRef, snap => {
     if (!snap.exists()) return;
 
+    lastOpenUiState = captureOpenUiState();
+
     isRemoteUpdate = true;
     data = snap.data();
     renderWeek(false);
+    restoreOpenUiState(lastOpenUiState);
     isRemoteUpdate = false;
   });
 
