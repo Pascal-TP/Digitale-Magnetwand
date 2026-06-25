@@ -235,10 +235,17 @@ body.menu-collapsed .toolbox {
 .note-actions button {
   padding: 4px 9px;
   font-size: 14px;
-  border-radius: 7px;
+  border-radius: 8px;
   box-shadow: none;
-  background: #1f2933;
-  color: white;
+  background: #eef2f7;
+  color: #1f2933;
+  border: 1px solid #cbd5e1;
+}
+
+.note-actions .delete {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fecaca;
 }
 
 .note-row {
@@ -261,7 +268,7 @@ body.menu-collapsed .toolbox {
 .field canvas {
   height: 34px;
   background:
-    linear-gradient(to bottom, transparent 0 28px, #222 29px, #222 31px, transparent 32px);
+    linear-gradient(to bottom, transparent 0 30px, #6b7280 31px, #6b7280 32px, transparent 33px);
   border: none;
   touch-action: none;
   cursor: crosshair;
@@ -270,7 +277,7 @@ body.menu-collapsed .toolbox {
 .field.full canvas {
   height: 38px;
   background:
-    linear-gradient(to bottom, transparent 0 32px, #222 33px, #222 35px, transparent 36px);
+    linear-gradient(to bottom, transparent 0 34px, #6b7280 35px, #6b7280 36px, transparent 37px);
 }
 
 .field b {
@@ -466,7 +473,7 @@ input[type="checkbox"] {
 .hybrid-field input {
   z-index: 1;
   border: none;
-  border-bottom: 3px solid #222;
+  border-bottom: 1px solid #6b7280;
   background: transparent;
   color: #164a8a;
   font-size: 18px;
