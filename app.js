@@ -352,6 +352,8 @@ async function addNote(day, noteData = null) {
     checks: {},
     assigned: [],
     minimized: true,
+    keyboardMode: true,
+    eraserMode: false,
     checklists: {
       bauleitung: Array(15).fill(false),
       prozess: Array(15).fill(false)
@@ -383,6 +385,20 @@ function createNoteElement(day, noteData) {
 
   if (noteData.minimized !== false) {
     clone.classList.add("minimized");
+  }
+
+  const modeButton = clone.querySelector(".mode-toggle");
+
+  if (noteData.keyboardMode !== false) {
+    clone.classList.add("keyboard-mode");
+    modeButton.textContent = "⌨ Tastatur";
+  } else {
+    modeButton.textContent = "✎ Stift";
+  }
+
+  if (noteData.eraserMode) {
+    clone.classList.add("eraser-mode");
+    clone.querySelector(".eraser-toggle").textContent = "✎ Schreiben";
   }
 
   clone.querySelector(".toggle-note").addEventListener("click", e => {
@@ -474,14 +490,20 @@ function createNoteElement(day, noteData) {
     });
   });
 
-  clone.querySelector(".mode-toggle").addEventListener("click", e => {
+  modeButton.addEventListener("click", e => {
     e.stopPropagation();
-    clone.classList.toggle("keyboard-mode");
 
-    const btn = clone.querySelector(".mode-toggle");
-    btn.textContent = clone.classList.contains("keyboard-mode")
+    clone.classList.toggle("keyboard-mode");
+    clone.classList.remove("eraser-mode");
+
+    modeButton.textContent = clone.classList.contains("keyboard-mode")
       ? "⌨ Tastatur"
       : "✎ Stift";
+
+    const eraserButton = clone.querySelector(".eraser-toggle");
+    eraserButton.textContent = "🧽 Radierer";
+
+    saveCurrentBoard();
   });
 
   clone.querySelector(".eraser-toggle").addEventListener("click", e => {
@@ -802,6 +824,8 @@ function collectNote(noteEl) {
   return {
     id: noteEl.dataset.noteId,
     noteNumber: Number(noteEl.dataset.noteNumber),
+    keyboardMode: noteEl.classList.contains("keyboard-mode"),
+    eraserMode: noteEl.classList.contains("eraser-mode"),
     writings,
     texts,
     checks,
