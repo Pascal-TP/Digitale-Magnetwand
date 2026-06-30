@@ -1538,7 +1538,10 @@ async function switchArea(area) {
 
   renderSlotLists();
   renderWeek(false);
+
   subscribeToRealtimeUpdates();
+  subscribeToHistory();
+
   updatePresence();
 
   logHistory("Bereich gewechselt", currentArea === "fbh" ? "FBH" : "Estrich");
