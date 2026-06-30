@@ -37,7 +37,13 @@ const db = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
 let currentUserRole = "view";
 
-const planningRef = doc(db, "planning", "main");
+const planningRefs = {
+  fbh: doc(db, "planning", "fbh"),
+  estrich: doc(db, "planning", "estrich")
+};
+
+let currentArea = "fbh";
+let planningRef = planningRefs[currentArea];
 const peopleRef = doc(db, "people", "main");
 const historyRef = collection(db, "history");
 const countersRef = doc(db, "meta", "counters");
@@ -117,6 +123,14 @@ document.getElementById("csvExportButton").addEventListener("click", exportCsv);
 
 document.getElementById("searchInput").addEventListener("input", e => {
   renderSearchResults(e.target.value);
+});
+
+document.getElementById("areaFbh").addEventListener("click", () => {
+  switchArea("fbh");
+});
+
+document.getElementById("areaEstrich").addEventListener("click", () => {
+  switchArea("estrich");
 });
 
 document.getElementById("addWorker").addEventListener("click", () => {
@@ -1165,6 +1179,7 @@ async function logHistory(action, details = "") {
   await addDoc(historyRef, {
     action,
     details,
+    area: currentArea,
     week: currentWeek,
     userEmail: auth.currentUser ? auth.currentUser.email : "",
     createdAt: serverTimestamp()
@@ -1216,6 +1231,7 @@ async function updatePresence() {
   await setDoc(doc(db, "presence", auth.currentUser.uid), {
     email: auth.currentUser.email || "Unbekannt",
     week: currentWeek,
+    area: currentArea,
     role: currentUserRole,
     lastSeenMs: Date.now(),
     updatedAt: serverTimestamp()
@@ -1273,7 +1289,7 @@ function subscribeToPresence() {
           <span class="online-dot"></span>
           <div>
             <div>${user.email || "Unbekannt"}</div>
-            <div class="online-meta">KW ${user.week || "-"} · ${user.role === "full" ? "Vollzugriff" : "Ansicht"}</div>
+            <div class="online-meta">${user.area === "estrich" ? "Estrich" : "FBH"} · KW ${user.week || "-"} · ${user.role === "full" ? "Vollzugriff" : "Ansicht"}</div>
           </div>
         `;
 
@@ -1484,4 +1500,29 @@ function openSearchResult(result) {
       inline: "center"
     });
   }, 50);
+}
+
+async function switchArea(area) {
+  if (area === currentArea) return;
+
+  saveCurrentBoard();
+
+  currentArea = area;
+  planningRef = planningRefs[currentArea];
+
+  document.getElementById("areaFbh").classList.toggle("active", currentArea === "fbh");
+  document.getElementById("areaEstrich").classList.toggle("active", currentArea === "estrich");
+
+  data = { weeks: {} };
+
+  if (unsubscribePlanning) unsubscribePlanning();
+
+  await loadDataFromFirestore();
+  await ensureNoteNumbers();
+
+  renderWeek(false);
+  subscribeToRealtimeUpdates();
+  updatePresence();
+
+  logHistory("Bereich gewechselt", currentArea === "fbh" ? "FBH" : "Estrich");
 }

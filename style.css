@@ -947,3 +947,23 @@ body.view-only #logoutButton {
   background: #1f2933;
   color: white;
 }
+
+.area-switch {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.area-button {
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 14px;
+  background: #eef2f7;
+  color: #1f2933;
+  box-shadow: none;
+}
+
+.area-button.active {
+  background: #4d8fd6;
+  color: white;
+}
