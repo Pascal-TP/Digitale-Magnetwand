@@ -892,3 +892,58 @@ body.view-only #logoutButton {
   top: 150px;
   z-index: 99999;
 }
+
+.search-box {
+  position: relative;
+  width: 360px;
+}
+
+.search-box input {
+  width: 100%;
+  height: 44px;
+  border: 2px solid #d9dde3;
+  border-radius: 14px;
+  padding: 0 14px;
+  font-size: 15px;
+  font-weight: 700;
+  outline: none;
+}
+
+.search-results {
+  position: absolute;
+  top: 52px;
+  left: 0;
+  width: 460px;
+  max-height: 360px;
+  overflow-y: auto;
+  background: white;
+  color: #17202a;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, .24);
+  z-index: 99999;
+}
+
+.search-results.hidden {
+  display: none;
+}
+
+.search-result-item {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e5e7eb;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.search-result-item:hover {
+  background: #eef2f7;
+}
+
+.search-result-item strong {
+  display: block;
+}
+
+#csvExportButton {
+  background: #1f2933;
+  color: white;
+}

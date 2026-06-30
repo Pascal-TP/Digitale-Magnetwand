@@ -113,6 +113,12 @@ document.getElementById("clearWeek").addEventListener("click", () => {
   }
 });
 
+document.getElementById("csvExportButton").addEventListener("click", exportCsv);
+
+document.getElementById("searchInput").addEventListener("input", e => {
+  renderSearchResults(e.target.value);
+});
+
 document.getElementById("addWorker").addEventListener("click", () => {
   addToSlotList("worker");
 });
@@ -1283,3 +1289,199 @@ function subscribeToPresence() {
 window.addEventListener("beforeunload", () => {
   removePresence();
 });
+
+function exportCsv() {
+  saveCurrentBoard();
+
+  const rows = [];
+
+  rows.push([
+    "KW",
+    "Tag",
+    "Zettel-Nr",
+    "Auftraggeber",
+    "BV",
+    "P-Nr",
+    "Ort",
+    "Bauträger",
+    "Etage",
+    "Fläche",
+    "HK",
+    "Rohr",
+    "Termin",
+    "Estrich",
+    "TW",
+    "Sonstiges",
+    "Summe Monteure",
+    "MZ",
+    "PP",
+    "AS",
+    "Materialliste",
+    "Angefahren",
+    "Nur Rohr",
+    "System + Rohr",
+    "Monteure/Fahrzeuge"
+  ]);
+
+  Object.keys(data.weeks || {}).forEach(weekNo => {
+    const week = data.weeks[weekNo];
+
+    DAYS.forEach(day => {
+      (week[day] || []).forEach(note => {
+        const t = note.texts || {};
+        const c = note.checks || {};
+        const assigned = (note.assigned || []).map(x => x.text).join(", ");
+
+        rows.push([
+          weekNo,
+          day,
+          formatNoteNumber(note),
+          t.auftraggeber || "",
+          t.bv || "",
+          t.p || "",
+          t.ort || "",
+          t.bautraeger || "",
+          t.etage || "",
+          t.flaeche || "",
+          t.hk || "",
+          t.rohr || "",
+          t.termin || "",
+          t.estrich || "",
+          t.tw || "",
+          t.sonstiges || "",
+          t.summe || "",
+          c.mz ? "ja" : "nein",
+          c.cl ? "ja" : "nein",
+          c.as ? "ja" : "nein",
+          c.materialliste ? "ja" : "nein",
+          c.angefahren ? "ja" : "nein",
+          c.nurrohr ? "ja" : "nein",
+          c.systemrohr ? "ja" : "nein",
+          assigned
+        ]);
+      });
+    });
+  });
+
+  const csv = rows
+    .map(row => row.map(csvCell).join(";"))
+    .join("\n");
+
+  const blob = new Blob(["\uFEFF" + csv], {
+    type: "text/csv;charset=utf-8;"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  a.href = url;
+  a.download = `digitale-projektplanung-export-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function csvCell(value) {
+  const text = String(value ?? "");
+  return `"${text.replaceAll('"', '""')}"`;
+}
+
+function findNotes(searchTerm) {
+  const term = searchTerm.trim().toLowerCase();
+  if (!term) return [];
+
+  const results = [];
+
+  Object.keys(data.weeks || {}).forEach(weekNo => {
+    const week = data.weeks[weekNo];
+
+    DAYS.forEach(day => {
+      (week[day] || []).forEach(note => {
+        const texts = note.texts || {};
+        const number = formatNoteNumber(note).toLowerCase();
+        const p = (texts.p || "").toLowerCase();
+        const bv = (texts.bv || "").toLowerCase();
+
+        if (
+          number.includes(term) ||
+          p.includes(term) ||
+          bv.includes(term)
+        ) {
+          results.push({
+            weekNo: Number(weekNo),
+            day,
+            noteId: note.id,
+            noteNumber: formatNoteNumber(note),
+            p: texts.p || "",
+            bv: texts.bv || ""
+          });
+        }
+      });
+    });
+  });
+
+  return results;
+}
+
+function renderSearchResults(searchTerm) {
+  const box = document.getElementById("searchResults");
+  const results = findNotes(searchTerm);
+
+  box.innerHTML = "";
+
+  if (!searchTerm.trim()) {
+    box.classList.add("hidden");
+    return;
+  }
+
+  if (results.length === 0) {
+    box.innerHTML = `<div class="search-result-item">Keine Treffer gefunden</div>`;
+    box.classList.remove("hidden");
+    return;
+  }
+
+  results.slice(0, 20).forEach(result => {
+    const div = document.createElement("div");
+    div.className = "search-result-item";
+
+    div.innerHTML = `
+      <strong>Zettel #${result.noteNumber} · KW ${result.weekNo} · ${result.day}</strong>
+      <div>P-Nr.: ${result.p || "-"} · BV: ${result.bv || "-"}</div>
+    `;
+
+    div.addEventListener("click", () => {
+      openSearchResult(result);
+    });
+
+    box.appendChild(div);
+  });
+
+  box.classList.remove("hidden");
+}
+
+function openSearchResult(result) {
+  saveCurrentBoard();
+
+  currentWeek = result.weekNo;
+  renderWeek(false);
+  updatePresence();
+
+  document.getElementById("searchResults").classList.add("hidden");
+  document.getElementById("searchInput").value = "";
+
+  setTimeout(() => {
+    const note = document.querySelector(`[data-note-id="${result.noteId}"]`);
+    if (!note) return;
+
+    document.querySelectorAll(".note:not(.minimized)").forEach(openNote => {
+      openNote.classList.add("minimized");
+    });
+
+    note.classList.remove("minimized");
+    note.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+      inline: "center"
+    });
+  }, 50);
+}

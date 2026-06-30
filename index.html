@@ -26,6 +26,12 @@
       <h1>Digitale Projektplanung</h1>
       <p>Flächenheizsystem, Fußbodentechnik & Estrich</p>
     </div>
+
+    <div class="search-box">
+      <input id="searchInput" type="text" placeholder="Suche: Zettel-Nr., P-Nr. oder BV" />
+      <div id="searchResults" class="search-results hidden"></div>
+    </div>
+
     <div class="week-controls">
       <button id="prevWeek">← Vorherige KW</button>
       <div id="prevWeekDrop" class="week-drop">← Ablegen: vorige KW</div>
@@ -41,6 +47,8 @@
     <aside class="toolbox">
       <button id="addNote">+ Neuer Zettel</button>
       <button id="clearWeek" class="danger">KW leeren</button>
+
+      <button id="csvExportButton">CSV Export</button>
 
       <div class="help-box">
         <button class="help-button">❓</button>
