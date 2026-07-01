@@ -540,8 +540,7 @@ function createNoteElement(day, noteData, options = {}) {
       document.querySelectorAll(".note:not(.minimized)").forEach(openNote => {
         if (openNote !== clone) {
           openNote.classList.add("minimized");
-          openNote.style.transform = "";
-          openNote.style.left = "";
+          resetOpenNoteViewportStyles(openNote);
 
           openNote.querySelectorAll(".checklist-panel").forEach(panel => {
             panel.classList.add("hidden");
@@ -552,18 +551,10 @@ function createNoteElement(day, noteData, options = {}) {
       clone.classList.remove("minimized");
 
       if (currentArea === "estrich") {
-        clone.style.position = "relative";
-        clone.style.left = "";
-        clone.style.top = "";
-        clone.style.width = "";
-        clone.style.transform = "";
-        clone.style.left = "";
-
         layoutEstrichSpans();
-        keepOpenNoteInViewport(clone);
-      } else {
-        keepOpenNoteInViewport(clone);
       }
+
+      keepOpenNoteInViewport(clone);
 
     } else {
       clone.querySelectorAll(".checklist-panel").forEach(panel => {
@@ -571,7 +562,7 @@ function createNoteElement(day, noteData, options = {}) {
       });
 
       clone.classList.add("minimized");
-      clone.style.transform = "";
+      resetOpenNoteViewportStyles(clone);
 
       if (currentArea === "estrich") {
         layoutEstrichSpans();
@@ -770,29 +761,50 @@ function createNoteElement(day, noteData, options = {}) {
   document.querySelector(`[data-day="${day}"] .dropzone`).appendChild(clone);
 }
 
+function resetOpenNoteViewportStyles(noteEl) {
+  if (!noteEl) return;
+
+  noteEl.classList.remove("viewport-open-note");
+  noteEl.style.position = "";
+  noteEl.style.left = "";
+  noteEl.style.top = "";
+  noteEl.style.width = "";
+  noteEl.style.maxWidth = "";
+  noteEl.style.transform = "";
+  noteEl.style.zIndex = "";
+}
+
 function keepOpenNoteInViewport(noteEl) {
   if (!noteEl || noteEl.classList.contains("minimized")) return;
 
-  noteEl.style.transform = "";
-  noteEl.style.left = "";
+  resetOpenNoteViewportStyles(noteEl);
 
   requestAnimationFrame(() => {
     const rect = noteEl.getBoundingClientRect();
     const padding = 16;
-    let shiftX = 0;
+    const availableWidth = window.innerWidth - padding * 2;
+    const width = Math.min(rect.width, availableWidth);
 
-    if (rect.right > window.innerWidth - padding) {
-      shiftX = (window.innerWidth - padding) - rect.right;
+    let left = rect.left;
+
+    if (left + width > window.innerWidth - padding) {
+      left = window.innerWidth - padding - width;
     }
 
-    if (rect.left + shiftX < padding) {
-      shiftX += padding - (rect.left + shiftX);
+    if (left < padding) {
+      left = padding;
     }
 
-    if (shiftX !== 0) {
-      noteEl.style.position = "relative";
-      noteEl.style.left = `${shiftX}px`;
-    }
+    const top = Math.max(padding, rect.top);
+
+    noteEl.classList.add("viewport-open-note");
+    noteEl.style.position = "fixed";
+    noteEl.style.left = `${left}px`;
+    noteEl.style.top = `${top}px`;
+    noteEl.style.width = `${width}px`;
+    noteEl.style.maxWidth = `${width}px`;
+    noteEl.style.transform = "";
+    noteEl.style.zIndex = "9999";
   });
 }
 
