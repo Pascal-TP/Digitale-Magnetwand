@@ -1065,19 +1065,19 @@ body.view-only #logoutButton {
 }
 
 .estrich-color-grey .estrich-sheet input:not([type="checkbox"]):not([type="radio"]) {
-  background: rgba(255,255,255,.45);
+  background: rgba(255, 255, 255, .45);
 }
 
 .estrich-color-blue .estrich-sheet input:not([type="checkbox"]):not([type="radio"]) {
-  background: rgba(255,255,255,.45);
+  background: rgba(255, 255, 255, .45);
 }
 
 .estrich-color-green .estrich-sheet input:not([type="checkbox"]):not([type="radio"]) {
-  background: rgba(255,255,255,.45);
+  background: rgba(255, 255, 255, .45);
 }
 
 .estrich-color-red .estrich-sheet input:not([type="checkbox"]):not([type="radio"]) {
-  background: rgba(255,255,255,.45);
+  background: rgba(255, 255, 255, .45);
 }
 
 .estrich-note:not(.minimized) {
@@ -1152,7 +1152,7 @@ body.view-only #logoutButton {
 }
 
 .color-box {
-  grid-column: 3;
+  grid-column: 1;
   grid-row: 4 / span 4;
   display: grid;
   gap: 4px;
@@ -1160,12 +1160,12 @@ body.view-only #logoutButton {
 }
 
 .upload-files {
-  grid-column: 4;
+  grid-column: 2;
   grid-row: 4;
 }
 
 .file-box {
-  grid-column: 4;
+  grid-column: 2 / span 3;
   grid-row: 5 / span 5;
   min-height: 150px;
   border: 1px solid #1f2933;
@@ -1196,14 +1196,20 @@ body.view-only #logoutButton {
   grid-row: 13;
 }
 
+.sonstiges input {
+  width: 100%;
+}
+
 .estrich-assigned {
   grid-column: 1 / span 2;
   grid-row: 14;
+  width: 100%;
 }
 
 .absent-assigned {
   grid-column: 3 / span 2;
   grid-row: 14;
+  width: 100%;
 }
 
 .kundenmail {
@@ -1253,4 +1259,17 @@ body.view-only #logoutButton {
 .estrich-note.continuation-note {
   border-style: dashed;
   background-clip: padding-box;
+}
+
+.estrich-sheet .sonstiges {
+  display: flex;
+}
+
+.estrich-sheet .sonstiges input {
+  flex: 1;
+}
+
+.estrich-assigned,
+.absent-assigned {
+  min-height: 64px;
 }
