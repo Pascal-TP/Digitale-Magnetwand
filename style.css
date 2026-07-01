@@ -985,9 +985,9 @@ body.view-only #logoutButton {
 }
 
 .estrich-note:not(.minimized) {
-  width: 1260px;
-  max-width: 1260px;
-  min-height: 760px;
+  width: calc(100vw - 340px);
+  max-width: 1450px;
+  min-width: 1100px;
 }
 
 .compact-date {
@@ -1081,21 +1081,53 @@ body.view-only #logoutButton {
 }
 
 .estrich-note:not(.minimized) {
-  width: 1120px;
-  max-width: 1120px;
-  min-height: 610px;
+  width: min(1280px, calc(100vw - 430px));
+  max-width: none;
+  min-width: 1050px;
+  min-height: 620px;
+}
+
+.estrich-full {
+  width: 100%;
 }
 
 .estrich-sheet {
-  display: grid;
-  grid-template-columns: 220px 230px 210px 210px;
-  gap: 10px 18px;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
 }
 
-.estrich-sheet label {
+.estrich-top-row {
+  display: flex;
+  justify-content: center;
+  gap: 180px;
+  margin-top: -8px;
+}
+
+.estrich-row {
+  display: flex;
+  gap: 22px;
+  width: 100%;
+}
+
+.estrich-row .line-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.line-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 14px;
   font-weight: 800;
+  white-space: nowrap;
+}
+
+.line-field input {
+  flex: 1;
+  min-width: 0;
 }
 
 .estrich-sheet input:not([type="checkbox"]):not([type="radio"]) {
@@ -1109,81 +1141,64 @@ body.view-only #logoutButton {
   outline: none;
 }
 
-.jf {
-  grid-column: 3;
-  justify-self: start;
-}
-
-.sl {
-  grid-column: 4;
-  justify-self: start;
-}
-
-.auftraggeber {
-  grid-column: 1;
-}
-
-.bv {
-  grid-column: 2;
-}
-
-.p {
-  grid-column: 3;
-}
-
-.ort {
-  grid-column: 4;
-}
-
-.etage {
-  grid-column: 1;
-}
-
-.flaeche {
-  grid-column: 2;
-}
-
-.termin-von {
-  grid-column: 3;
-}
-
-.termin-bis {
-  grid-column: 4;
+.estrich-media-row {
+  display: flex;
+  gap: 22px;
+  align-items: stretch;
+  width: 100%;
 }
 
 .color-box {
-  grid-column: 1;
-  grid-row: 4 / span 4;
-  display: grid;
+  width: 190px;
+  flex: 0 0 190px;
+  display: flex;
+  flex-direction: column;
   gap: 4px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.color-box strong {
+  margin-bottom: 2px;
+}
+
+.color-box label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.upload-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .upload-files {
-  grid-column: 2;
-  grid-row: 4;
+  width: 220px;
+  align-self: flex-start;
 }
 
 .file-box {
-  grid-column: 2 / span 3;
-  grid-row: 5 / span 5;
-  min-height: 150px;
+  flex: 1;
+  min-height: 145px;
   border: 1px solid #1f2933;
+  background: white;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 10px;
-  background: white;
+  padding: 12px;
 }
 
 .zusatz-box {
-  grid-column: 1 / span 3;
-  grid-row: 8 / span 4;
   display: grid;
-  grid-template-columns: 190px 1fr;
-  gap: 6px 14px;
+  grid-template-columns: 220px 1fr;
+  gap: 7px 16px;
   align-items: center;
+  width: 100%;
+  margin-top: 4px;
 }
 
 .zusatz-box strong {
@@ -1191,19 +1206,55 @@ body.view-only #logoutButton {
   text-decoration: underline;
 }
 
+.zusatz-box label {
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zusatz-box input:not([type="checkbox"]) {
+  width: 100%;
+}
+
 .sonstiges {
-  grid-column: 1 / span 4;
-  grid-row: 13;
-}
-
-.sonstiges input {
   width: 100%;
 }
 
-.estrich-assigned {
-  grid-column: 1 / span 2;
-  grid-row: 14;
+.assigned-row {
+  display: flex;
+  gap: 20px;
   width: 100%;
+}
+
+.assigned-row .assigned {
+  flex: 1;
+  min-height: 64px;
+  margin-top: 0;
+  border: 1px solid #1f2933;
+  border-radius: 0;
+  background: white;
+  justify-content: center;
+}
+
+.assigned-row .absent-assigned {
+  background: #fff7ed;
+}
+
+.estrich-bottom-row {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  width: 100%;
+}
+
+.estrich-bottom-row .kundenmail {
+  flex: 0 0 390px;
+}
+
+.send-appointment {
+  width: 220px;
 }
 
 .absent-assigned {

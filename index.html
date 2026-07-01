@@ -330,32 +330,42 @@
         <div class="note-number-full">Zettel #<span class="note-number">????</span></div>
 
         <div class="estrich-sheet">
-          <label class="check jf"><input type="checkbox" data-check="jf"> JF</label>
-          <label class="check sl"><input type="checkbox" data-check="sl"> SL</label>
 
-          <label class="line-field auftraggeber">Auftraggeber:<input data-text-field="auftraggeber"></label>
-          <label class="line-field bv">BV:<input data-text-field="bv"></label>
-
-          <label class="line-field p">P-<input data-text-field="p"></label>
-          <label class="line-field ort">Ort:<input data-text-field="ort"></label>
-
-          <label class="line-field etage">Etage:<input data-text-field="etage"></label>
-          <label class="line-field flaeche">Fläche:<input data-text-field="flaeche"></label>
-
-          <label class="line-field termin-von">Termin: von <input type="date" data-text-field="startdate"></label>
-          <label class="line-field termin-bis">bis <input type="date" data-text-field="enddate"></label>
-
-          <div class="color-box">
-            <strong>Farbe "Zettel"</strong>
-            <label><input type="radio" name="color-PLACEHOLDER" data-text-field="color" value="grey"> hellgrau</label>
-            <label><input type="radio" name="color-PLACEHOLDER" data-text-field="color" value="blue"> hellblau</label>
-            <label><input type="radio" name="color-PLACEHOLDER" data-text-field="color" value="green"> hellgrün</label>
-            <label><input type="radio" name="color-PLACEHOLDER" data-text-field="color" value="red"> hellrot</label>
-            <label><input type="radio" name="color-PLACEHOLDER" data-text-field="color" value=""> Standard</label>
+          <div class="estrich-top-row">
+            <label class="check"><input type="checkbox" data-check="jf"> JF</label>
+            <label class="check"><input type="checkbox" data-check="sl"> SL</label>
           </div>
 
-          <button type="button" class="upload-files" disabled>Upload Dateien</button>
-          <div class="file-box">Hier werden später Dateien angezeigt.</div>
+          <div class="estrich-row">
+            <label class="line-field">Auftraggeber:<input data-text-field="auftraggeber"></label>
+            <label class="line-field">BV:<input data-text-field="bv"></label>
+            <label class="line-field">P-<input data-text-field="p"></label>
+            <label class="line-field">Ort:<input data-text-field="ort"></label>
+          </div>
+
+          <div class="estrich-row">
+            <label class="line-field">Etage:<input data-text-field="etage"></label>
+            <label class="line-field">Fläche:<input data-text-field="flaeche"></label>
+            <label class="line-field">Termin: von <input type="date" data-text-field="startdate"></label>
+            <label class="line-field">bis <input type="date" data-text-field="enddate"></label>
+          </div>
+
+          <div class="estrich-media-row">
+            <div class="color-box">
+              <strong>Farbe "Zettel"</strong>
+              <label><input type="radio" name="color-PLACEHOLDER" data-text-field="color" value="grey"> hellgrau</label>
+              <label><input type="radio" name="color-PLACEHOLDER" data-text-field="color" value="blue"> hellblau</label>
+              <label><input type="radio" name="color-PLACEHOLDER" data-text-field="color" value="green">
+                hellgrün</label>
+              <label><input type="radio" name="color-PLACEHOLDER" data-text-field="color" value="red"> hellrot</label>
+              <label><input type="radio" name="color-PLACEHOLDER" data-text-field="color" value=""> Standard</label>
+            </div>
+
+            <div class="upload-area">
+              <button type="button" class="upload-files" disabled>Upload Dateien</button>
+              <div class="file-box">Hier werden später Dateien angezeigt.</div>
+            </div>
+          </div>
 
           <div class="zusatz-box">
             <strong>Zusatzmittel</strong>
@@ -375,13 +385,17 @@
 
           <label class="line-field sonstiges">Sonstiges:<input data-text-field="sonstiges"></label>
 
-          <div class="assigned estrich-assigned"></div>
-          <div class="assigned absent-assigned"></div>
+          <div class="assigned-row">
+            <div class="assigned estrich-assigned"></div>
+            <div class="assigned absent-assigned"></div>
+          </div>
 
-          <label class="line-field kundenmail">E-Mail-Adresse Kunde:<input data-text-field="kundenmail"></label>
-          <button type="button" class="send-appointment" disabled>Termin teilen</button>
+          <div class="estrich-bottom-row">
+            <label class="line-field kundenmail">E-Mail-Adresse Kunde:<input data-text-field="kundenmail"></label>
+            <button type="button" class="send-appointment" disabled>Termin teilen</button>
+          </div>
+
         </div>
-
         <div class="canvas-tools">
           <button class="clear-writing">Handschrift leeren</button>
         </div>
