@@ -1766,6 +1766,15 @@ function layoutEstrichSpans() {
   const weekStart = getMondayOfISOWeek(currentWeek, year);
   const weekEnd = addDays(weekStart, DAYS.length - 1);
 
+  document.querySelectorAll(".estrich-note:not(.minimized)").forEach(note => {
+    note.style.position = "relative";
+    note.style.left = "";
+    note.style.top = "";
+    note.style.width = "";
+    note.style.display = "";
+    note.style.zIndex = "50";
+  });
+
   const notes = [...document.querySelectorAll(".estrich-note.minimized")];
 
   notes.forEach((note, lane) => {
