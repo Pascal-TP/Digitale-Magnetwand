@@ -306,6 +306,79 @@
     </article>
   </template>
 
+  <template id="estrichNoteTemplate">
+    <article class="note estrich-note" draggable="true">
+      <div class="note-compact">
+        <div class="compact-title">
+          #<span class="note-number">????</span> · BV: <span class="compact-bv">-</span>
+        </div>
+        <div class="compact-date">
+          <span data-compact-date>-</span>
+        </div>
+        <div class="compact-assigned"></div>
+      </div>
+
+      <div class="note-actions">
+        <button class="mode-toggle" title="Stift/Tastatur">✎ Stift</button>
+        <button class="eraser-toggle" title="Radierer">🧽 Radierer</button>
+        <button class="duplicate" title="Kopieren">⧉</button>
+        <button class="delete" title="Löschen">×</button>
+        <button class="toggle-note" title="Öffnen/Minimieren">▣</button>
+      </div>
+
+      <div class="note-full estrich-full">
+        <div class="note-number-full">Zettel #<span class="note-number">????</span></div>
+
+        <div class="estrich-grid">
+          <label class="check"><input type="checkbox" data-check="jf"> JF</label>
+          <label class="check"><input type="checkbox" data-check="sl"> SL</label>
+
+          <label>Auftraggeber:<input data-text-field="auftraggeber"></label>
+          <label>BV:<input data-text-field="bv"></label>
+          <label>P-<input data-text-field="p"></label>
+          <label>Ort:<input data-text-field="ort"></label>
+          <label>Etage:<input data-text-field="etage"></label>
+          <label>Fläche:<input data-text-field="flaeche"></label>
+
+          <label>Termin von:<input type="date" data-text-field="startdate"></label>
+          <label>bis:<input type="date" data-text-field="enddate"></label>
+
+          <label>Farbe:
+            <select data-text-field="color">
+              <option value="">Standard</option>
+              <option value="grey">hellgrau</option>
+              <option value="blue">hellblau</option>
+              <option value="green">hellgrün</option>
+              <option value="red">hellrot</option>
+            </select>
+          </label>
+
+          <div class="estrich-section">
+            <strong>Zusatzmittel</strong>
+            <label><input type="checkbox" data-check="zusatz1"> Beispielartikel 1</label>
+            <label><input type="checkbox" data-check="zusatz2"> Beispielartikel 2</label>
+            <label><input type="checkbox" data-check="zusatz3"> Beispielartikel 3</label>
+            <label><input type="checkbox" data-check="zusatz4"> Beispielartikel 4</label>
+          </div>
+
+          <label class="wide">Anmerkung:<input data-text-field="anmerkung"></label>
+          <label class="wide">Sonstiges:<input data-text-field="sonstiges"></label>
+          <label class="wide">E-Mail Kunde:<input data-text-field="kundenmail"></label>
+
+          <button type="button" class="send-appointment" disabled>Termin teilen</button>
+          <button type="button" class="upload-files" disabled>Upload Dateien</button>
+        </div>
+
+        <div class="assigned estrich-assigned">Monteure / Fahrzeuge hier ablegen</div>
+        <div class="assigned absent-assigned">Monteure abwesend, hier ablegen</div>
+
+        <div class="canvas-tools">
+          <button class="clear-writing">Handschrift leeren</button>
+        </div>
+      </div>
+    </article>
+  </template>
+
   <script type="module" src="app.js"></script>
 </body>
 

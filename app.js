@@ -93,7 +93,8 @@ let vehicles = [
 ];
 
 const weekNumber = document.getElementById("weekNumber");
-const template = document.getElementById("noteTemplate");
+const fbhTemplate = document.getElementById("noteTemplate");
+const estrichTemplate = document.getElementById("estrichNoteTemplate");
 const columns = [...document.querySelectorAll(".day-column")];
 
 const menuToggle = document.getElementById("menuToggle");
@@ -378,6 +379,14 @@ function renderWeek(shouldSave = true) {
   });
 
   updateWeekDates();
+
+  if (currentArea === "estrich") {
+    document.body.classList.add("estrich-area");
+    setTimeout(layoutEstrichSpans, 0);
+  } else {
+    document.body.classList.remove("estrich-area");
+  }
+
   if (shouldSave && !isRemoteUpdate) {
     saveData();
   }
@@ -400,6 +409,13 @@ async function addNote(day, noteData = null) {
     }
   };
 
+  if (currentArea === "estrich") {
+    const start = getDateForDayName(day);
+    empty.texts.startdate = formatDateInput(start);
+    empty.texts.enddate = formatDateInput(start);
+    empty.texts.color = "";
+  }
+
   const finalData = noteData || empty;
 
   if (!finalData.noteNumber) {
@@ -414,7 +430,8 @@ async function addNote(day, noteData = null) {
 }
 
 function createNoteElement(day, noteData) {
-  const clone = template.content.firstElementChild.cloneNode(true);
+  const activeTemplate = currentArea === "estrich" ? estrichTemplate : fbhTemplate;
+  const clone = activeTemplate.content.firstElementChild.cloneNode(true);
   clone.dataset.noteId = noteData.id;
 
   clone.dataset.noteNumber = formatNoteNumber(noteData);
@@ -526,6 +543,12 @@ function createNoteElement(day, noteData) {
 
     input.addEventListener("input", () => {
       updateCompactView(clone);
+
+      if (currentArea === "estrich" && (key === "startdate" || key === "enddate" || key === "color")) {
+        moveEstrichNoteToStartDay(clone);
+        setTimeout(layoutEstrichSpans, 0);
+      }
+
       saveCurrentBoard();
     });
   });
@@ -577,6 +600,27 @@ function createNoteElement(day, noteData) {
     }
   });
   renderAssigned(assigned, noteData.assigned || []);
+
+  const absentAssigned = clone.querySelector(".absent-assigned");
+  if (absentAssigned) {
+    absentAssigned.addEventListener("dragover", e => e.preventDefault());
+    absentAssigned.addEventListener("drop", e => {
+      e.preventDefault();
+      if (!dragMagnetText) return;
+
+      const item = { text: dragMagnetText, cls: dragMagnetClass };
+      const current = readAssigned(absentAssigned);
+
+      if (!current.some(x => x.text === item.text)) {
+        current.push(item);
+        renderAssigned(absentAssigned, current);
+        saveCurrentBoard();
+        logHistory("Abwesenheit geändert", `${item.text} wurde als abwesend eingetragen`);
+      }
+    });
+
+    renderAssigned(absentAssigned, noteData.absent || []);
+  }
 
   clone.querySelector(".clear-writing").addEventListener("click", () => {
     clone.querySelectorAll("canvas[data-field]").forEach(clearCanvas);
@@ -746,6 +790,7 @@ function setupChecklists(noteEl, noteData) {
     if (!noteData.checklists[type]) noteData.checklists[type] = Array(15).fill(false);
 
     const container = noteEl.querySelector(`[data-list="${type}"]`);
+    if (!container) return;
     container.innerHTML = "";
 
     for (let i = 0; i < 15; i++) {
@@ -830,6 +875,18 @@ function updateCompactView(noteEl) {
   if (source && target) {
     target.innerHTML = source.innerHTML;
   }
+
+  const compactDate = noteEl.querySelector("[data-compact-date]");
+  if (compactDate) {
+    const start = noteEl.querySelector('[data-text-field="startdate"]')?.value || "";
+    const end = noteEl.querySelector('[data-text-field="enddate"]')?.value || "";
+
+    compactDate.textContent = start && end
+      ? `${formatDisplayDate(start)} bis ${formatDisplayDate(end)}`
+      : "-";
+  }
+
+  applyNoteColor(noteEl);
 }
 
 function collectNote(noteEl) {
@@ -870,6 +927,9 @@ function collectNote(noteEl) {
     texts,
     checks,
     assigned: readAssigned(noteEl.querySelector(".assigned")),
+    absent: noteEl.querySelector(".absent-assigned")
+      ? readAssigned(noteEl.querySelector(".absent-assigned"))
+      : [],
     minimized: noteEl.classList.contains("minimized"),
     checklists
   };
@@ -1545,4 +1605,95 @@ async function switchArea(area) {
   updatePresence();
 
   logHistory("Bereich gewechselt", currentArea === "fbh" ? "FBH" : "Estrich");
+}
+
+function getDateForDayName(dayName) {
+  const monday = getMondayOfISOWeek(currentWeek, year);
+  const index = DAYS.indexOf(dayName);
+  const date = new Date(monday);
+  date.setDate(monday.getDate() + Math.max(0, index));
+  return date;
+}
+
+function formatDateInput(date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function formatDisplayDate(value) {
+  if (!value) return "";
+  const [y, m, d] = value.split("-");
+  return `${d}.${m}.`;
+}
+
+function parseInputDate(value) {
+  if (!value) return null;
+  const [y, m, d] = value.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function getDayIndexFromDate(value) {
+  const date = parseInputDate(value);
+  if (!date) return 0;
+
+  const monday = getMondayOfISOWeek(currentWeek, year);
+  const diff = Math.round((date - monday) / 86400000);
+
+  return Math.min(5, Math.max(0, diff));
+}
+
+function moveEstrichNoteToStartDay(noteEl) {
+  const start = noteEl.querySelector('[data-text-field="startdate"]')?.value;
+  const index = getDayIndexFromDate(start);
+  const targetDay = DAYS[index];
+  const targetDropzone = document.querySelector(`[data-day="${targetDay}"] .dropzone`);
+
+  if (targetDropzone && !targetDropzone.contains(noteEl)) {
+    targetDropzone.appendChild(noteEl);
+  }
+}
+
+function applyNoteColor(noteEl) {
+  if (!noteEl.classList.contains("estrich-note")) return;
+
+  const color = noteEl.querySelector('[data-text-field="color"]')?.value || "";
+
+  noteEl.classList.remove(
+    "estrich-color-grey",
+    "estrich-color-blue",
+    "estrich-color-green",
+    "estrich-color-red"
+  );
+
+  if (color) {
+    noteEl.classList.add(`estrich-color-${color}`);
+  }
+}
+
+function layoutEstrichSpans() {
+  if (currentArea !== "estrich") return;
+
+  const board = document.getElementById("board");
+  const cols = [...document.querySelectorAll(".day-column")];
+  const notes = [...document.querySelectorAll(".estrich-note.minimized")];
+
+  notes.forEach((note, lane) => {
+    const start = note.querySelector('[data-text-field="startdate"]')?.value;
+    const end = note.querySelector('[data-text-field="enddate"]')?.value || start;
+
+    const startIndex = getDayIndexFromDate(start);
+    const endIndex = Math.max(startIndex, getDayIndexFromDate(end));
+
+    const startCol = cols[startIndex];
+    const endCol = cols[endIndex];
+
+    const left = startCol.offsetLeft + 12;
+    const right = endCol.offsetLeft + endCol.offsetWidth - 12;
+    const top = startCol.querySelector("h2").offsetHeight + 34 + lane * 105;
+
+    note.style.position = "absolute";
+    note.style.left = `${left}px`;
+    note.style.top = `${top}px`;
+    note.style.width = `${right - left}px`;
+    note.style.zIndex = "20";
+  });
 }

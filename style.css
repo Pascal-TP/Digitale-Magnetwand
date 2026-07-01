@@ -973,3 +973,92 @@ body.view-only #logoutButton {
   background: #4d8fd6;
   color: white;
 }
+
+.estrich-area .board {
+  position: relative;
+}
+
+.estrich-note.minimized {
+  min-height: 86px;
+  padding: 12px;
+  border-left: 8px solid #6b7280;
+}
+
+.estrich-note:not(.minimized) {
+  width: 1180px;
+  max-width: 1180px;
+}
+
+.compact-date {
+  font-size: 13px;
+  font-weight: 700;
+  color: #4b5563;
+  margin-bottom: 8px;
+}
+
+.estrich-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px 22px;
+  align-items: end;
+}
+
+.estrich-grid label {
+  font-size: 15px;
+  font-weight: 800;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.estrich-grid input,
+.estrich-grid select {
+  height: 34px;
+  border: none;
+  border-bottom: 1px solid #6b7280;
+  background: rgba(77, 143, 214, .08);
+  font-size: 16px;
+  font-weight: 700;
+  padding: 4px 8px;
+}
+
+.estrich-grid .wide {
+  grid-column: span 2;
+}
+
+.estrich-section {
+  display: grid;
+  gap: 6px;
+}
+
+.estrich-assigned,
+.absent-assigned {
+  width: 50%;
+  display: inline-flex;
+  vertical-align: top;
+  min-height: 58px;
+  margin-top: 18px;
+  border: 1px solid #1f2933;
+  border-radius: 0;
+  justify-content: center;
+}
+
+.absent-assigned {
+  background: #fff7ed;
+}
+
+.estrich-color-grey {
+  background: #f3f4f6;
+}
+
+.estrich-color-blue {
+  background: #dbeafe;
+}
+
+.estrich-color-green {
+  background: #dcfce7;
+}
+
+.estrich-color-red {
+  background: #fee2e2;
+}
