@@ -1370,3 +1370,7 @@ body.view-only #logoutButton {
   background: #e8edf3;
   color: #1f2933;
 }
+
+.note.new-note {
+  border: 5px solid #c0392b;
+}

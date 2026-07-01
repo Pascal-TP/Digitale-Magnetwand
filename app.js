@@ -464,6 +464,7 @@ async function addNote(day, noteData = null) {
     checks: {},
     assigned: [],
     minimized: true,
+    isNew: true,
     keyboardMode: true,
     eraserMode: false,
     checklists: {
@@ -504,6 +505,10 @@ function createNoteElement(day, noteData, options = {}) {
   clone.dataset.noteId = noteData.id;
 
   clone.dataset.noteNumber = formatNoteNumber(noteData);
+
+  if (noteData.isNew) {
+    clone.classList.add("new-note");
+  }
 
   clone.dataset.sourceWeek = options.sourceWeek || currentWeek;
 
@@ -600,6 +605,7 @@ function createNoteElement(day, noteData, options = {}) {
     const key = input.dataset.check;
     input.checked = !!(noteData.checks && noteData.checks[key]);
     input.addEventListener("change", () => {
+      markNoteAsEdited(clone);
       saveCurrentBoard();
 
       logHistory(
@@ -646,6 +652,7 @@ function createNoteElement(day, noteData, options = {}) {
 
     input.addEventListener("input", () => {
       updateCompactView(clone);
+      markNoteAsEdited(clone);
 
       if (currentArea === "estrich" && (key === "startdate" || key === "enddate" || key === "color")) {
         moveEstrichNoteToStartDay(clone);
@@ -706,6 +713,7 @@ function createNoteElement(day, noteData, options = {}) {
       current.push(item);
       renderAssigned(assigned, current);
       updateCompactView(clone);
+      markNoteAsEdited(clone);
       saveCurrentBoard();
 
       logHistory("Zuordnung geändert", `${item.text} wurde einem Zettel zugeordnet`);
@@ -726,6 +734,7 @@ function createNoteElement(day, noteData, options = {}) {
       if (!current.some(x => x.text === item.text)) {
         current.push(item);
         renderAssigned(absentAssigned, current);
+        markNoteAsEdited(clone);
         saveCurrentBoard();
         logHistory("Abwesenheit geändert", `${item.text} wurde als abwesend eingetragen`);
       }
@@ -837,6 +846,8 @@ function setupWritingCanvas(canvas, imageData) {
 
   let drawing = false;
   let last = null;
+
+  markNoteAsEdited(canvas.closest(".note"));
 
   function point(e) {
     const rect = canvas.getBoundingClientRect();
@@ -971,6 +982,7 @@ function setupChecklists(noteEl, noteData) {
 
       input.addEventListener("change", () => {
         updateTrafficLights(noteEl);
+        markNoteAsEdited(noteEl);
         saveCurrentBoard();
 
         const listName = type === "bauleitung" ? "Bauleitung" : "Prozess";
@@ -1108,7 +1120,13 @@ function collectNote(noteEl) {
     minimized: noteEl.classList.contains("minimized"),
     checklists,
     files: JSON.parse(noteEl.dataset.files || "[]"),
+    isNew: noteEl.classList.contains("new-note"),
   };
+}
+
+function markNoteAsEdited(noteEl) {
+  if (!noteEl) return;
+  noteEl.classList.remove("new-note");
 }
 
 function getNoteFiles(noteEl) {
@@ -1207,6 +1225,8 @@ async function handleEstrichFileUpload(event, noteEl) {
 
   setNoteFiles(noteEl, currentFiles);
 
+  markNoteAsEdited(noteEl);
+
   logHistory(
     "Dateien hochgeladen",
     `${getNoteLabel(noteEl)} · ${files.length} Datei(en)`
@@ -1274,6 +1294,7 @@ async function removeEstrichFile(noteEl, index) {
 
   files.splice(index, 1);
   setNoteFiles(noteEl, files);
+  markNoteAsEdited(noteEl);
 }
 
 async function sendEstrichAppointment(noteEl) {
