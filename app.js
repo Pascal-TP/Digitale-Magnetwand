@@ -849,8 +849,6 @@ function setupWritingCanvas(canvas, imageData) {
   let drawing = false;
   let last = null;
 
-  markNoteAsEdited(canvas.closest(".note"));
-
   function point(e) {
     const rect = canvas.getBoundingClientRect();
     return {
@@ -883,6 +881,8 @@ function setupWritingCanvas(canvas, imageData) {
   canvas.addEventListener("pointerup", () => {
     drawing = false;
     last = null;
+
+    markNoteAsEdited(canvas.closest(".note"));
     saveCurrentBoard();
 
     const note = canvas.closest(".note");
