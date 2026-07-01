@@ -385,18 +385,29 @@ function renderWeek(shouldSave = true) {
   weekNumber.textContent = currentWeek;
   columns.forEach(column => column.querySelector(".dropzone").innerHTML = "");
 
-  const week = getWeek();
-  DAYS.forEach(day => {
-    (week[day] || []).forEach(noteData => createNoteElement(day, noteData));
-  });
-
-  updateWeekDates();
-
   if (currentArea === "estrich") {
     document.body.classList.add("estrich-area");
+
+    const visibleNotes = getVisibleEstrichNotesForCurrentWeek();
+
+    visibleNotes.forEach(item => {
+      createNoteElement(item.day, item.note, {
+        sourceWeek: item.sourceWeek,
+        isContinuation: item.sourceWeek !== currentWeek
+      });
+    });
+
+    updateWeekDates();
     setTimeout(layoutEstrichSpans, 0);
   } else {
     document.body.classList.remove("estrich-area");
+
+    const week = getWeek();
+    DAYS.forEach(day => {
+      (week[day] || []).forEach(noteData => createNoteElement(day, noteData));
+    });
+
+    updateWeekDates();
   }
 
   if (shouldSave && !isRemoteUpdate) {
@@ -446,12 +457,18 @@ async function addNote(day, noteData = null) {
   logHistory("Zettel erstellt", `Zettel #${formatNoteNumber(finalData)} wurde in KW ${currentWeek}, ${day} erstellt`);
 }
 
-function createNoteElement(day, noteData) {
+function createNoteElement(day, noteData, options = {}) {
   const activeTemplate = currentArea === "estrich" ? estrichTemplate : fbhTemplate;
   const clone = activeTemplate.content.firstElementChild.cloneNode(true);
   clone.dataset.noteId = noteData.id;
 
   clone.dataset.noteNumber = formatNoteNumber(noteData);
+
+  clone.dataset.sourceWeek = options.sourceWeek || currentWeek;
+
+  if (options.isContinuation) {
+    clone.classList.add("continuation-note");
+  }
 
   clone.querySelectorAll('input[type="radio"][name="color-PLACEHOLDER"]').forEach(radio => {
     radio.name = `color-${noteData.id}`;
@@ -988,6 +1005,12 @@ function saveCurrentBoard() {
   columns.forEach(column => {
     const day = column.dataset.day;
     column.querySelectorAll(".note").forEach(noteEl => {
+      const sourceWeek = Number(noteEl.dataset.sourceWeek || currentWeek);
+
+      if (currentArea === "estrich" && sourceWeek !== currentWeek) {
+        return;
+      }
+
       week[day].push(collectNote(noteEl));
     });
   });
@@ -1809,4 +1832,42 @@ function updateEstrichDatesAfterMove(noteEl, targetDayName) {
   if (endInput) endInput.value = formatDateInput(newEnd);
 
   updateCompactView(noteEl);
+}
+
+function getVisibleEstrichNotesForCurrentWeek() {
+  const result = [];
+  const weekStart = getMondayOfISOWeek(currentWeek, year);
+  const weekEnd = addDays(weekStart, DAYS.length - 1);
+
+  Object.keys(data.weeks || {}).forEach(weekNo => {
+    const week = data.weeks[weekNo];
+
+    DAYS.forEach(day => {
+      (week[day] || []).forEach(note => {
+        const startValue = note.texts?.startdate;
+        const endValue = note.texts?.enddate || startValue;
+
+        const start = parseInputDate(startValue);
+        const end = parseInputDate(endValue);
+
+        if (!start || !end) return;
+
+        if (end < weekStart || start > weekEnd) return;
+
+        const visibleStart = start < weekStart ? weekStart : start;
+        const dayIndex = Math.max(
+          0,
+          Math.min(5, Math.round((visibleStart - weekStart) / 86400000))
+        );
+
+        result.push({
+          sourceWeek: Number(weekNo),
+          day: DAYS[dayIndex],
+          note
+        });
+      });
+    });
+  });
+
+  return result;
 }

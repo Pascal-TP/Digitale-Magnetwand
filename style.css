@@ -1190,3 +1190,14 @@ body.view-only #logoutButton {
 .absent-assigned {
   background: #fff7ed;
 }
+
+.estrich-note.continuation-note {
+  border-style: dashed;
+}
+
+.estrich-note.continuation-note .compact-title::after {
+  content: " · Fortsetzung";
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+}
