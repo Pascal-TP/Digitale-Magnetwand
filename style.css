@@ -1064,51 +1064,59 @@ body.view-only #logoutButton {
   background: #fee2e2;
 }
 
+.estrich-color-grey .estrich-sheet input:not([type="checkbox"]):not([type="radio"]) {
+  background: rgba(255,255,255,.45);
+}
+
+.estrich-color-blue .estrich-sheet input:not([type="checkbox"]):not([type="radio"]) {
+  background: rgba(255,255,255,.45);
+}
+
+.estrich-color-green .estrich-sheet input:not([type="checkbox"]):not([type="radio"]) {
+  background: rgba(255,255,255,.45);
+}
+
+.estrich-color-red .estrich-sheet input:not([type="checkbox"]):not([type="radio"]) {
+  background: rgba(255,255,255,.45);
+}
+
+.estrich-note:not(.minimized) {
+  width: 1120px;
+  max-width: 1120px;
+  min-height: 610px;
+}
+
 .estrich-sheet {
   display: grid;
-  grid-template-columns: 1.15fr 1.15fr 1.1fr 220px;
-  gap: 16px 24px;
-  align-items: end;
+  grid-template-columns: 220px 230px 210px 210px;
+  gap: 10px 18px;
+  align-items: center;
 }
 
 .estrich-sheet label {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 800;
 }
 
-.estrich-sheet input:not([type="checkbox"]):not([type="radio"]),
-.estrich-sheet select {
-  height: 32px;
+.estrich-sheet input:not([type="checkbox"]):not([type="radio"]) {
+  height: 28px;
   border: none;
   border-bottom: 1px solid #1f2933;
   background: transparent;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
-  padding: 3px 6px;
+  padding: 2px 5px;
   outline: none;
-}
-
-.estrich-note.keyboard-mode .estrich-sheet input:not([type="checkbox"]):not([type="radio"]),
-.estrich-note.keyboard-mode .estrich-sheet select {
-  background: rgba(77, 143, 214, .10);
-}
-
-.line-field {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.line-field input {
-  flex: 1;
 }
 
 .jf {
   grid-column: 3;
+  justify-self: start;
 }
 
 .sl {
   grid-column: 4;
+  justify-self: start;
 }
 
 .auftraggeber {
@@ -1119,36 +1127,62 @@ body.view-only #logoutButton {
   grid-column: 2;
 }
 
+.p {
+  grid-column: 3;
+}
+
+.ort {
+  grid-column: 4;
+}
+
+.etage {
+  grid-column: 1;
+}
+
+.flaeche {
+  grid-column: 2;
+}
+
+.termin-von {
+  grid-column: 3;
+}
+
+.termin-bis {
+  grid-column: 4;
+}
+
 .color-box {
   grid-column: 3;
-  grid-row: span 3;
+  grid-row: 4 / span 4;
   display: grid;
-  gap: 6px;
+  gap: 4px;
   font-weight: 700;
 }
 
 .upload-files {
   grid-column: 4;
+  grid-row: 4;
 }
 
 .file-box {
   grid-column: 4;
-  grid-row: span 5;
-  min-height: 170px;
+  grid-row: 5 / span 5;
+  min-height: 150px;
   border: 1px solid #1f2933;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 12px;
+  padding: 10px;
   background: white;
 }
 
 .zusatz-box {
   grid-column: 1 / span 3;
+  grid-row: 8 / span 4;
   display: grid;
-  grid-template-columns: 210px 1fr;
-  gap: 8px 18px;
+  grid-template-columns: 190px 1fr;
+  gap: 6px 14px;
   align-items: center;
 }
 
@@ -1159,18 +1193,27 @@ body.view-only #logoutButton {
 
 .sonstiges {
   grid-column: 1 / span 4;
+  grid-row: 13;
 }
 
 .estrich-assigned {
   grid-column: 1 / span 2;
+  grid-row: 14;
 }
 
 .absent-assigned {
   grid-column: 3 / span 2;
+  grid-row: 14;
 }
 
 .kundenmail {
   grid-column: 1 / span 2;
+  grid-row: 15;
+}
+
+.send-appointment {
+  grid-column: 3;
+  grid-row: 15;
 }
 
 .send-appointment {
@@ -1200,4 +1243,14 @@ body.view-only #logoutButton {
   font-size: 12px;
   font-weight: 700;
   color: #6b7280;
+}
+
+.estrich-note.continuation-note:not(.minimized) {
+  width: 980px;
+  max-width: 980px;
+}
+
+.estrich-note.continuation-note {
+  border-style: dashed;
+  background-clip: padding-box;
 }

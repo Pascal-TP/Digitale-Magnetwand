@@ -567,7 +567,9 @@ function createNoteElement(day, noteData, options = {}) {
       input.value = noteData.texts ? noteData.texts[key] || "" : "";
     }
 
-    input.dataset.oldValue = input.value;
+    input.dataset.oldValue = input.type === "radio"
+      ? String(input.checked)
+      : input.value;
 
     input.addEventListener("focus", () => {
       input.dataset.oldValue = input.value;
@@ -1742,7 +1744,8 @@ function moveEstrichNoteToStartDay(noteEl) {
 function applyNoteColor(noteEl) {
   if (!noteEl.classList.contains("estrich-note")) return;
 
-  const color = noteEl.querySelector('[data-text-field="color"]')?.value || "";
+  const checkedColor = noteEl.querySelector('[data-text-field="color"]:checked');
+  const color = checkedColor ? checkedColor.value : "";
 
   noteEl.classList.remove(
     "estrich-color-grey",
