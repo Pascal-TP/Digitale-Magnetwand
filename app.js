@@ -393,7 +393,8 @@ function renderWeek(shouldSave = true) {
     visibleNotes.forEach(item => {
       createNoteElement(item.day, item.note, {
         sourceWeek: item.sourceWeek,
-        isContinuation: item.isContinuation
+        isContinuation: item.isContinuation,
+        continuesNext: item.continuesNext
       });
     });
 
@@ -468,6 +469,10 @@ function createNoteElement(day, noteData, options = {}) {
 
   if (options.isContinuation) {
     clone.classList.add("continuation-note");
+  }
+
+  if (options.continuesNext) {
+    clone.classList.add("continues-next-note");
   }
 
   clone.querySelectorAll('input[type="radio"][name="color-PLACEHOLDER"]').forEach(radio => {
@@ -1875,7 +1880,8 @@ function getVisibleEstrichNotesForCurrentWeek() {
           sourceWeek: Number(weekNo),
           day: DAYS[dayIndex],
           note,
-          isContinuation: start < weekStart
+          isContinuation: start < weekStart,
+          continuesNext: end > weekEnd
         });
       });
     });

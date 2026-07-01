@@ -1324,3 +1324,11 @@ body.view-only #logoutButton {
 .absent-assigned {
   min-height: 64px;
 }
+
+.estrich-note.continues-next-note {
+  border-right: 8px dashed #6b7280;
+}
+
+.estrich-note.continues-next-note.minimized {
+  border-right: 8px dashed #6b7280;
+}
