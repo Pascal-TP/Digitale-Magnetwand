@@ -164,7 +164,13 @@ document.getElementById("clearWeek").addEventListener("click", () => {
   }
 });
 
-document.getElementById("csvExportButton").addEventListener("click", exportCsv);
+document.getElementById("csvExportButton").addEventListener("click", () => {
+  if (currentArea === "estrich") {
+    exportEstrichCsv();
+  } else {
+    exportCsv();
+  }
+});
 
 document.getElementById("searchInput").addEventListener("input", e => {
   renderSearchResults(e.target.value);
@@ -1851,6 +1857,84 @@ function exportCsv() {
 
   a.href = url;
   a.download = `digitale-projektplanung-export-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function exportEstrichCsv() {
+  saveCurrentBoard();
+
+  const rows = [];
+
+  rows.push([
+    "KW",
+    "Tag",
+    "Zettel-Nr",
+    "Startdatum",
+    "Enddatum",
+    "Auftraggeber",
+    "BV",
+    "P-Nr",
+    "Ort",
+    "Bauträger",
+    "Etage",
+    "Fläche",
+    "Estrichart",
+    "Sonstiges",
+    "Kunden-E-Mail",
+    "Monteure/Fahrzeuge",
+    "Abwesend",
+    "Dateien"
+  ]);
+
+  Object.keys(data.weeks || {}).forEach(weekNo => {
+    const week = data.weeks[weekNo];
+
+    DAYS.forEach(day => {
+      (week[day] || []).forEach(note => {
+        const t = note.texts || {};
+        const assigned = (note.assigned || []).map(x => x.text).join(", ");
+        const absent = (note.absent || []).map(x => x.text).join(", ");
+        const files = (note.files || []).map(f => f.name).join(", ");
+
+        rows.push([
+          weekNo,
+          day,
+          formatNoteNumber(note),
+          t.startdate || "",
+          t.enddate || "",
+          t.auftraggeber || "",
+          t.bv || "",
+          t.p || "",
+          t.ort || "",
+          t.bautraeger || "",
+          t.etage || "",
+          t.flaeche || "",
+          t.estrich || "",
+          t.sonstiges || "",
+          t.kundenmail || "",
+          assigned,
+          absent,
+          files
+        ]);
+      });
+    });
+  });
+
+  const csv = rows
+    .map(row => row.map(csvCell).join(";"))
+    .join("\n");
+
+  const blob = new Blob(["\uFEFF" + csv], {
+    type: "text/csv;charset=utf-8;"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  a.href = url;
+  a.download = `digitale-projektplanung-estrich-export-${new Date().toISOString().slice(0, 10)}.csv`;
   a.click();
 
   URL.revokeObjectURL(url);
