@@ -985,8 +985,9 @@ body.view-only #logoutButton {
 }
 
 .estrich-note:not(.minimized) {
-  width: 1180px;
-  max-width: 1180px;
+  width: 1260px;
+  max-width: 1260px;
+  min-height: 760px;
 }
 
 .compact-date {
@@ -1061,4 +1062,131 @@ body.view-only #logoutButton {
 
 .estrich-color-red {
   background: #fee2e2;
+}
+
+.estrich-sheet {
+  display: grid;
+  grid-template-columns: 1.15fr 1.15fr 1.1fr 220px;
+  gap: 16px 24px;
+  align-items: end;
+}
+
+.estrich-sheet label {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.estrich-sheet input:not([type="checkbox"]):not([type="radio"]),
+.estrich-sheet select {
+  height: 32px;
+  border: none;
+  border-bottom: 1px solid #1f2933;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 3px 6px;
+  outline: none;
+}
+
+.estrich-note.keyboard-mode .estrich-sheet input:not([type="checkbox"]):not([type="radio"]),
+.estrich-note.keyboard-mode .estrich-sheet select {
+  background: rgba(77, 143, 214, .10);
+}
+
+.line-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.line-field input {
+  flex: 1;
+}
+
+.jf {
+  grid-column: 3;
+}
+
+.sl {
+  grid-column: 4;
+}
+
+.auftraggeber {
+  grid-column: 1;
+}
+
+.bv {
+  grid-column: 2;
+}
+
+.color-box {
+  grid-column: 3;
+  grid-row: span 3;
+  display: grid;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.upload-files {
+  grid-column: 4;
+}
+
+.file-box {
+  grid-column: 4;
+  grid-row: span 5;
+  min-height: 170px;
+  border: 1px solid #1f2933;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 12px;
+  background: white;
+}
+
+.zusatz-box {
+  grid-column: 1 / span 3;
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  gap: 8px 18px;
+  align-items: center;
+}
+
+.zusatz-box strong {
+  grid-column: 1 / -1;
+  text-decoration: underline;
+}
+
+.sonstiges {
+  grid-column: 1 / span 4;
+}
+
+.estrich-assigned {
+  grid-column: 1 / span 2;
+}
+
+.absent-assigned {
+  grid-column: 3 / span 2;
+}
+
+.kundenmail {
+  grid-column: 1 / span 2;
+}
+
+.send-appointment {
+  grid-column: 3;
+}
+
+.estrich-assigned,
+.absent-assigned {
+  min-height: 58px;
+  margin-top: 4px;
+  border: 1px solid #1f2933;
+  border-radius: 0;
+  justify-content: center;
+  background: white;
+}
+
+.absent-assigned {
+  background: #fff7ed;
 }

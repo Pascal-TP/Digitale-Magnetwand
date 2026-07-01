@@ -329,48 +329,58 @@
       <div class="note-full estrich-full">
         <div class="note-number-full">Zettel #<span class="note-number">????</span></div>
 
-        <div class="estrich-grid">
-          <label class="check"><input type="checkbox" data-check="jf"> JF</label>
-          <label class="check"><input type="checkbox" data-check="sl"> SL</label>
+        <div class="estrich-sheet">
+          <label class="check jf"><input type="checkbox" data-check="jf"> JF</label>
+          <label class="check sl"><input type="checkbox" data-check="sl"> SL</label>
 
-          <label>Auftraggeber:<input data-text-field="auftraggeber"></label>
-          <label>BV:<input data-text-field="bv"></label>
-          <label>P-<input data-text-field="p"></label>
-          <label>Ort:<input data-text-field="ort"></label>
-          <label>Etage:<input data-text-field="etage"></label>
-          <label>Fläche:<input data-text-field="flaeche"></label>
+          <label class="line-field auftraggeber">Auftraggeber:<input data-text-field="auftraggeber"></label>
+          <label class="line-field bv">BV:<input data-text-field="bv"></label>
 
-          <label>Termin von:<input type="date" data-text-field="startdate"></label>
-          <label>bis:<input type="date" data-text-field="enddate"></label>
+          <label class="line-field p">P-<input data-text-field="p"></label>
+          <label class="line-field ort">Ort:<input data-text-field="ort"></label>
 
-          <label>Farbe:
-            <select data-text-field="color">
-              <option value="">Standard</option>
-              <option value="grey">hellgrau</option>
-              <option value="blue">hellblau</option>
-              <option value="green">hellgrün</option>
-              <option value="red">hellrot</option>
-            </select>
-          </label>
+          <label class="line-field etage">Etage:<input data-text-field="etage"></label>
+          <label class="line-field flaeche">Fläche:<input data-text-field="flaeche"></label>
 
-          <div class="estrich-section">
-            <strong>Zusatzmittel</strong>
-            <label><input type="checkbox" data-check="zusatz1"> Beispielartikel 1</label>
-            <label><input type="checkbox" data-check="zusatz2"> Beispielartikel 2</label>
-            <label><input type="checkbox" data-check="zusatz3"> Beispielartikel 3</label>
-            <label><input type="checkbox" data-check="zusatz4"> Beispielartikel 4</label>
+          <label class="line-field termin-von">Termin: von <input type="date" data-text-field="startdate"></label>
+          <label class="line-field termin-bis">bis <input type="date" data-text-field="enddate"></label>
+
+          <div class="color-box">
+            <strong>Farbe "Zettel"</strong>
+            <label><input type="radio" name="color-PLACEHOLDER" data-text-field="color" value="grey"> hellgrau</label>
+            <label><input type="radio" name="color-PLACEHOLDER" data-text-field="color" value="blue"> hellblau</label>
+            <label><input type="radio" name="color-PLACEHOLDER" data-text-field="color" value="green"> hellgrün</label>
+            <label><input type="radio" name="color-PLACEHOLDER" data-text-field="color" value="red"> hellrot</label>
+            <label><input type="radio" name="color-PLACEHOLDER" data-text-field="color" value=""> Standard</label>
           </div>
 
-          <label class="wide">Anmerkung:<input data-text-field="anmerkung"></label>
-          <label class="wide">Sonstiges:<input data-text-field="sonstiges"></label>
-          <label class="wide">E-Mail Kunde:<input data-text-field="kundenmail"></label>
-
-          <button type="button" class="send-appointment" disabled>Termin teilen</button>
           <button type="button" class="upload-files" disabled>Upload Dateien</button>
-        </div>
+          <div class="file-box">Hier werden später Dateien angezeigt.</div>
 
-        <div class="assigned estrich-assigned">Monteure / Fahrzeuge hier ablegen</div>
-        <div class="assigned absent-assigned">Monteure abwesend, hier ablegen</div>
+          <div class="zusatz-box">
+            <strong>Zusatzmittel</strong>
+
+            <label><input type="checkbox" data-check="zusatz1"> Beispielartikel 1</label>
+            <input data-text-field="zusatz1note" placeholder="Anmerkung">
+
+            <label><input type="checkbox" data-check="zusatz2"> Beispielartikel 2</label>
+            <input data-text-field="zusatz2note" placeholder="Anmerkung">
+
+            <label><input type="checkbox" data-check="zusatz3"> Beispielartikel 3</label>
+            <input data-text-field="zusatz3note" placeholder="Anmerkung">
+
+            <label><input type="checkbox" data-check="zusatz4"> Beispielartikel 4</label>
+            <input data-text-field="zusatz4note" placeholder="Anmerkung">
+          </div>
+
+          <label class="line-field sonstiges">Sonstiges:<input data-text-field="sonstiges"></label>
+
+          <div class="assigned estrich-assigned"></div>
+          <div class="assigned absent-assigned"></div>
+
+          <label class="line-field kundenmail">E-Mail-Adresse Kunde:<input data-text-field="kundenmail"></label>
+          <button type="button" class="send-appointment" disabled>Termin teilen</button>
+        </div>
 
         <div class="canvas-tools">
           <button class="clear-writing">Handschrift leeren</button>

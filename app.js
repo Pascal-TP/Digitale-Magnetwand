@@ -179,6 +179,12 @@ columns.forEach(column => {
 
     column.querySelector(".dropzone").appendChild(note);
     dragNoteId = null;
+
+    if (currentArea === "estrich" && note.classList.contains("estrich-note")) {
+      updateEstrichDatesAfterMove(note, column.dataset.day);
+      setTimeout(layoutEstrichSpans, 0);
+    }
+
     saveCurrentBoard();
 
     logHistory(
@@ -436,6 +442,10 @@ function createNoteElement(day, noteData) {
 
   clone.dataset.noteNumber = formatNoteNumber(noteData);
 
+  clone.querySelectorAll('input[type="radio"][name="color-PLACEHOLDER"]').forEach(radio => {
+    radio.name = `color-${noteData.id}`;
+  });
+
   clone.querySelectorAll(".note-number").forEach(el => {
     el.textContent = formatNoteNumber(noteData);
   });
@@ -519,7 +529,11 @@ function createNoteElement(day, noteData) {
 
   clone.querySelectorAll("[data-text-field]").forEach(input => {
     const key = input.dataset.textField;
-    input.value = noteData.texts ? noteData.texts[key] || "" : "";
+    if (input.type === "radio") {
+      input.checked = (noteData.texts ? noteData.texts[key] || "" : "") === input.value;
+    } else {
+      input.value = noteData.texts ? noteData.texts[key] || "" : "";
+    }
 
     input.dataset.oldValue = input.value;
 
@@ -550,6 +564,15 @@ function createNoteElement(day, noteData) {
       }
 
       saveCurrentBoard();
+    });
+
+    input.addEventListener("change", () => {
+      updateCompactView(clone);
+
+      if (currentArea === "estrich" && key === "color") {
+        applyNoteColor(clone);
+        saveCurrentBoard();
+      }
     });
   });
 
@@ -897,7 +920,16 @@ function collectNote(noteEl) {
 
   const texts = {};
   noteEl.querySelectorAll("[data-text-field]").forEach(input => {
-    texts[input.dataset.textField] = input.value;
+    const key = input.dataset.textField;
+
+    if (input.type === "radio") {
+      if (input.checked) {
+        texts[key] = input.value;
+      }
+      return;
+    }
+
+    texts[key] = input.value;
   });
 
   const checks = {};
@@ -1188,10 +1220,24 @@ function setupWeekDrop(elementId, direction) {
 
     if (!movedNote) return;
 
+    const oldStart = movedNote.texts?.startdate || "";
+    const oldEnd = movedNote.texts?.enddate || oldStart;
+    const durationDays = getDateDurationDays(oldStart, oldEnd);
+
     let targetWeekNumber = currentWeek + direction;
 
     if (targetWeekNumber < 1) targetWeekNumber = 52;
     if (targetWeekNumber > 52) targetWeekNumber = 1;
+
+    if (currentArea === "estrich") {
+      const targetMonday = getMondayOfISOWeek(targetWeekNumber, year);
+      movedNote.texts = movedNote.texts || {};
+      movedNote.texts.startdate = formatDateInput(targetMonday);
+
+      const newEnd = new Date(targetMonday);
+      newEnd.setDate(targetMonday.getDate() + durationDays);
+      movedNote.texts.enddate = formatDateInput(newEnd);
+    }
 
     if (!data.weeks[targetWeekNumber]) {
       data.weeks[targetWeekNumber] = emptyWeek();
@@ -1672,16 +1718,33 @@ function applyNoteColor(noteEl) {
 function layoutEstrichSpans() {
   if (currentArea !== "estrich") return;
 
-  const board = document.getElementById("board");
   const cols = [...document.querySelectorAll(".day-column")];
+  const weekStart = getMondayOfISOWeek(currentWeek, year);
+  const weekEnd = addDays(weekStart, DAYS.length - 1);
+
   const notes = [...document.querySelectorAll(".estrich-note.minimized")];
 
   notes.forEach((note, lane) => {
-    const start = note.querySelector('[data-text-field="startdate"]')?.value;
-    const end = note.querySelector('[data-text-field="enddate"]')?.value || start;
+    const startValue = note.querySelector('[data-text-field="startdate"]')?.value;
+    const endValue = note.querySelector('[data-text-field="enddate"]')?.value || startValue;
 
-    const startIndex = getDayIndexFromDate(start);
-    const endIndex = Math.max(startIndex, getDayIndexFromDate(end));
+    const realStart = parseInputDate(startValue);
+    const realEnd = parseInputDate(endValue);
+
+    if (!realStart || !realEnd) return;
+
+    const visibleStart = realStart < weekStart ? weekStart : realStart;
+    const visibleEnd = realEnd > weekEnd ? weekEnd : realEnd;
+
+    if (visibleEnd < weekStart || visibleStart > weekEnd) {
+      note.style.display = "none";
+      return;
+    }
+
+    note.style.display = "";
+
+    const startIndex = Math.max(0, Math.min(5, Math.round((visibleStart - weekStart) / 86400000)));
+    const endIndex = Math.max(startIndex, Math.min(5, Math.round((visibleEnd - weekStart) / 86400000)));
 
     const startCol = cols[startIndex];
     const endCol = cols[endIndex];
@@ -1696,4 +1759,36 @@ function layoutEstrichSpans() {
     note.style.width = `${right - left}px`;
     note.style.zIndex = "20";
   });
+}
+
+function addDays(date, days) {
+  const copy = new Date(date);
+  copy.setDate(copy.getDate() + days);
+  return copy;
+}
+
+function getDateDurationDays(startValue, endValue) {
+  const start = parseInputDate(startValue);
+  const end = parseInputDate(endValue);
+
+  if (!start || !end) return 0;
+
+  return Math.max(0, Math.round((end - start) / 86400000));
+}
+
+function updateEstrichDatesAfterMove(noteEl, targetDayName) {
+  const oldStartValue = noteEl.querySelector('[data-text-field="startdate"]')?.value;
+  const oldEndValue = noteEl.querySelector('[data-text-field="enddate"]')?.value || oldStartValue;
+
+  const durationDays = getDateDurationDays(oldStartValue, oldEndValue);
+  const newStart = getDateForDayName(targetDayName);
+  const newEnd = addDays(newStart, durationDays);
+
+  const startInput = noteEl.querySelector('[data-text-field="startdate"]');
+  const endInput = noteEl.querySelector('[data-text-field="enddate"]');
+
+  if (startInput) startInput.value = formatDateInput(newStart);
+  if (endInput) endInput.value = formatDateInput(newEnd);
+
+  updateCompactView(noteEl);
 }
