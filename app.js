@@ -31,7 +31,8 @@ import {
   getStorage,
   ref as storageRef,
   uploadBytesResumable,
-  deleteObject
+  deleteObject,
+  getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 
 const firebaseConfig = {
@@ -1157,12 +1158,29 @@ function renderEstrichFileList(noteEl) {
   files.forEach((file, index) => {
     const div = document.createElement("div");
     div.className = "estrich-file-item";
+
     div.innerHTML = `
       <span>${file.name}</span>
-      <button type="button" data-remove-file="${index}">Entfernen</button>
+
+      <div class="estrich-file-actions">
+        <button type="button" data-open-file="${index}">Öffnen</button>
+        <button type="button" data-remove-file="${index}">Entfernen</button>
+      </div>
     `;
 
-    div.querySelector("button").addEventListener("click", async e => {
+    div.querySelector("[data-open-file]").addEventListener("click", async e => {
+      e.stopPropagation();
+
+      try {
+        const url = await getDownloadURL(storageRef(blazeStorage, file.path));
+        window.open(url, "_blank");
+      } catch (err) {
+        console.error("Datei konnte nicht geöffnet werden:", err);
+        alert("Die Datei konnte nicht geöffnet werden.");
+      }
+    });
+
+    div.querySelector("[data-remove-file]").addEventListener("click", async e => {
       e.stopPropagation();
       await removeEstrichFile(noteEl, index);
     });
