@@ -297,6 +297,7 @@ const FIELD_LABELS = {
   estrich: "Estrich",
   tw: "TW",
   sonstiges: "Sonstiges",
+  pdslink: "PDS-Projekt-Link",
   summe: "Summe Monteure",
   mz: "MZ",
   cl: "PP",
@@ -781,6 +782,7 @@ function createNoteElement(day, noteData, options = {}) {
     setupEstrichUploadAndMail(clone, noteData);
   }
 
+  setupPdsButton(clone);
   setupChecklists(clone, noteData);
   updateCompactView(clone);
 
@@ -2367,4 +2369,28 @@ function getVisibleEstrichNotesForCurrentWeek() {
   });
 
   return result;
+}
+
+function setupPdsButton(noteEl) {
+  const button = noteEl.querySelector(".open-pds-button");
+  if (!button) return;
+
+  button.addEventListener("click", e => {
+    e.stopPropagation();
+
+    const input = noteEl.querySelector('[data-text-field="pdslink"]');
+    const url = input ? input.value.trim() : "";
+
+    if (!url) {
+      alert("Bitte zuerst den PDS-Projekt-Link einfügen.");
+      return;
+    }
+
+    if (!url.startsWith("http://127.0.0.1:8090/")) {
+      alert("Der Link sieht nicht wie ein lokaler PDS-Link aus.");
+      return;
+    }
+
+    window.open(url, "_blank");
+  });
 }

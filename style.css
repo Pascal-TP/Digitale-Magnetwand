@@ -1374,3 +1374,19 @@ body.view-only #logoutButton {
 .note.new-note {
   border: 5px solid #c0392b;
 }
+
+.pds-row {
+  align-items: flex-end;
+}
+
+.open-pds-button {
+  background: #eef2f7;
+  color: #1f2933;
+  border: 1px solid #cbd5e1;
+  box-shadow: none;
+  white-space: nowrap;
+}
+
+.estrich-bottom-row .pdslink {
+  flex: 1;
+}
