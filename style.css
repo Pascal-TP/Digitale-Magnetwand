@@ -215,8 +215,8 @@ body.menu-collapsed .toolbox {
   padding: 44px 14px 12px;
   box-shadow: 0 10px 24px rgba(0, 0, 0, .18);
   cursor: grab;
-  width: 950px;
-  max-width: 950px;
+  width: 1050px;
+  max-width: 1050px;
   min-height: 330px;
 }
 
